@@ -1,210 +1,225 @@
-// Complete App Integration File (app.js) with Mobile Responsiveness Optimizations
+// Complete App Integration File (app.js) - Synchronized with PostgreSQL DB via REST API
 
-// State Management and Storage Helpers
 const STORAGE_KEYS = {
   CREATORS: 'brutal_creators_v1',
   POSTS: 'brutal_posts_v1',
   USER: 'brutal_current_user_v1',
 };
 
-const DEFAULT_CREATORS = [
-  {
-    id: 'creator-1',
-    handle: 'pixelpunk',
-    displayName: 'Alex Rivers // Audio & Glitch',
-    bio: 'Crafting cyber-monochrome digital synth soundscapes & 8-bit visual glitches.',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
-    bannerUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80',
-    category: 'Digital Art & Music',
-    theme: {
-      primaryColor: { r: 255, g: 87, b: 34 },
-      accentColor: { r: 255, g: 235, b: 59 }
-    },
-    subscribersCount: 1420,
-    monthlyRevenue: 4260,
-    tiers: [
-      {
-        id: 'tier-1',
-        name: 'STREET CYBER',
-        price: 5,
-        description: 'Access to subscriber-only audio logs and raw WIP assets.',
-        perks: ['Subscriber Badge', 'Weekly Audio Stems', 'Private Discord Access']
-      },
-      {
-        id: 'tier-2',
-        name: 'NEO MATRIX',
-        price: 15,
-        description: 'Complete source project files, custom synth presets & 1-on-1 Q&A.',
-        perks: ['All Previous Perks', 'Ableton Live Files', 'Direct Q&A Sessions']
-      }
-    ]
-  },
-  {
-    id: 'creator-2',
-    handle: 'brutal_arch',
-    displayName: 'Concrete & Steel Studio',
-    bio: 'Monochrome architectural photography, brutalist structures, and modern minimalism analysis.',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
-    bannerUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&auto=format&fit=crop&q=80',
-    category: 'Architecture & Design',
-    theme: {
-      primaryColor: { r: 0, g: 230, b: 118 },
-      accentColor: { r: 0, g: 184, b: 212 }
-    },
-    subscribersCount: 890,
-    monthlyRevenue: 2670,
-    tiers: [
-      {
-        id: 'tier-b1',
-        name: 'DRAFT CLUB',
-        price: 3,
-        description: 'High-res RAW photo downloads and weekly architectural breakdown notes.',
-        perks: ['Full Res RAW Downloads', 'Weekly Architecture Essays']
-      }
-    ]
-  },
-  {
-    id: 'creator-3',
-    handle: 'cyber_code',
-    displayName: 'Vortex Developer // Web3 & GLSL',
-    bio: 'WebGL shader experiments, generative canvas art, and open-source frontend toolkits.',
-    avatarUrl: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&auto=format&fit=crop&q=80',
-    bannerUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
-    category: 'Tech & Code',
-    theme: {
-      primaryColor: { r: 233, g: 30, b: 99 },
-      accentColor: { r: 0, g: 229, b: 255 }
-    },
-    subscribersCount: 2100,
-    monthlyRevenue: 8400,
-    tiers: [
-      {
-        id: 'tier-c1',
-        name: 'SHADER GOD',
-        price: 10,
-        description: 'Full Three.js and GLSL source code downloads with video walkthroughs.',
-        perks: ['Source Code Repository Access', 'Weekly GLSL Breakdown', 'Discord VIP']
-      }
-    ]
-  }
-];
-
-const DEFAULT_POSTS = [
-  {
-    id: 'post-1',
-    creatorId: 'creator-1',
-    title: 'NEW SYNTH MODULE RELEASED! 🎛️',
-    content: 'Just finished coding the modular synth engine patch for our latest track! Subscribers can grab the preset files below.',
-    imageUrl: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&auto=format&fit=crop&q=80',
-    createdAt: '2 hours ago',
-    isExclusive: false,
-    likesCount: 142
-  },
-  {
-    id: 'post-2',
-    creatorId: 'creator-1',
-    title: '[VIP EXCLUSIVE] Unreleased Synthesizer Stems & Ableton Project',
-    content: 'Here is the full multitrack stem breakdown for "BRUTAL_CORE_09". Free for Neo Matrix tier members.',
-    createdAt: '1 day ago',
-    isExclusive: true,
-    tierId: 'tier-2',
-    likesCount: 89
-  },
-  {
-    id: 'post-3',
-    creatorId: 'creator-2',
-    title: 'Shadows on Raw Concrete: Berlin Brutalism Study',
-    content: 'High contrast monograph on 1970s municipal architecture in West Berlin.',
-    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&auto=format&fit=crop&q=80',
-    createdAt: '3 days ago',
-    isExclusive: false,
-    likesCount: 215
-  }
-];
-
-const DEFAULT_USER = {
-  id: 'user-guest',
-  name: 'Visitor Guest',
-  username: 'guest',
-  role: 'guest',
-  subscribedCreatorIds: ['creator-1'],
-  creatorProfileId: null
-};
-
-// Global Application State Store
+// Global Application State Store with API Syncing
 class Store {
   constructor() {
-    this.creators = this.load(STORAGE_KEYS.CREATORS, DEFAULT_CREATORS);
-    this.posts = this.load(STORAGE_KEYS.POSTS, DEFAULT_POSTS);
-    this.user = this.load(STORAGE_KEYS.USER, DEFAULT_USER);
+    this.creators = [];
+    this.posts = [];
+    this.user = this.loadUser();
     this.activeView = 'explore';
-    this.selectedCreatorId = 'creator-1';
+    this.selectedCreatorId = null;
     this.filterCategory = 'ALL';
     this.searchQuery = '';
+    this.isLoading = true;
     this.signupTemp = {
       role: 'creator',
       name: '',
       username: '',
       email: '',
-      password: ''
+      password: '',
     };
   }
 
-  load(key, fallback) {
-    const data = localStorage.getItem(key);
+  loadUser() {
+    const data = localStorage.getItem(STORAGE_KEYS.USER);
     if (!data) {
-      localStorage.setItem(key, JSON.stringify(fallback));
-      return fallback;
+      const defaultUser = {
+        id: 'user-guest',
+        name: 'Visitor Guest',
+        username: 'guest',
+        role: 'guest',
+        subscribedCreatorIds: [],
+        creatorProfileId: null,
+      };
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(defaultUser));
+      return defaultUser;
     }
     try {
       return JSON.parse(data);
     } catch {
-      return fallback;
+      return {
+        id: 'user-guest',
+        name: 'Visitor Guest',
+        username: 'guest',
+        role: 'guest',
+        subscribedCreatorIds: [],
+        creatorProfileId: null,
+      };
     }
   }
 
-  save() {
-    localStorage.setItem(STORAGE_KEYS.CREATORS, JSON.stringify(this.creators));
-    localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(this.posts));
+  saveUser() {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(this.user));
     window.dispatchEvent(new Event('store-updated'));
   }
 
+  async fetchCreators() {
+    try {
+      const res = await fetch('/api/creators');
+      if (res.ok) {
+        this.creators = await res.json();
+        if (!this.selectedCreatorId && this.creators.length > 0) {
+          this.selectedCreatorId = this.creators[0].id;
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch creators:', err);
+    }
+  }
+
+  async fetchPosts() {
+    try {
+      const res = await fetch('/api/posts');
+      if (res.ok) {
+        this.posts = await res.json();
+      }
+    } catch (err) {
+      console.error('Failed to fetch posts:', err);
+    }
+  }
+
+  async fetchUserSubscriptions() {
+    if (!this.user || !this.user.id) return;
+    try {
+      const res = await fetch(`/api/users/${this.user.id}/subscriptions`);
+      if (res.ok) {
+        this.user.subscribedCreatorIds = await res.json();
+        this.saveUser();
+      }
+    } catch (err) {
+      console.error('Failed to fetch user subscriptions:', err);
+    }
+  }
+
+  async init() {
+    this.isLoading = true;
+    await Promise.all([this.fetchCreators(), this.fetchPosts(), this.fetchUserSubscriptions()]);
+    this.isLoading = false;
+    renderApp();
+  }
+
   getCreator(id) {
-    return this.creators.find(c => c.id === id) || this.creators[0];
+    return this.creators.find((c) => c.id === id) || this.creators[0] || null;
   }
 
   getPostsByCreator(creatorId) {
-    return this.posts.filter(p => p.creatorId === creatorId);
+    return this.posts.filter((p) => p.creatorId === creatorId);
   }
 
-  updateCreatorTheme(creatorId, theme) {
-    const creator = this.creators.find(c => c.id === creatorId);
-    if (creator) {
-      creator.theme = theme;
-      this.save();
+  async updateCreatorThemeAndMedia(creatorId, theme, avatarUrl, bannerUrl) {
+    try {
+      const res = await fetch(`/api/creators/${creatorId}/theme`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme, avatarUrl, bannerUrl }),
+      });
+      if (res.ok) {
+        await this.fetchCreators();
+        renderApp();
+      }
+    } catch (err) {
+      console.error('Failed to update theme:', err);
     }
   }
 
-  updateCreatorProfile(creatorId, details) {
-    const creator = this.creators.find(c => c.id === creatorId);
-    if (creator) {
-      Object.assign(creator, details);
-      this.save();
+  async addPost(postData) {
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(postData),
+      });
+      if (res.ok) {
+        const newPost = await res.json();
+        this.posts.unshift(newPost);
+        await this.fetchCreators();
+        renderApp();
+      }
+    } catch (err) {
+      console.error('Failed to add post:', err);
     }
   }
 
-  addPost(post) {
-    this.posts.unshift(post);
-    this.save();
+  async subscribeToCreator(creatorId, tierId, price) {
+    try {
+      const res = await fetch('/api/subscriptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patronId: this.user.id,
+          campaignId: creatorId,
+          tierId,
+          price,
+        }),
+      });
+      if (res.ok) {
+        if (!this.user.subscribedCreatorIds.includes(creatorId)) {
+          this.user.subscribedCreatorIds.push(creatorId);
+          this.saveUser();
+        }
+        await Promise.all([this.fetchCreators(), this.fetchPosts()]);
+        renderApp();
+      }
+    } catch (err) {
+      console.error('Failed to subscribe:', err);
+    }
   }
 
-  subscribeToCreator(creatorId) {
-    if (!this.user.subscribedCreatorIds.includes(creatorId)) {
-      this.user.subscribedCreatorIds.push(creatorId);
-      const creator = this.getCreator(creatorId);
-      if (creator) creator.subscribersCount += 1;
-      this.save();
+  async likePost(postId) {
+    try {
+      const res = await fetch(`/api/posts/${postId}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: this.user.id }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const post = this.posts.find((p) => p.id === postId);
+        if (post) {
+          post.likesCount = data.likesCount;
+          renderApp();
+        }
+      }
+    } catch (err) {
+      console.error('Failed to like post:', err);
+    }
+  }
+
+  async onboardCreator(creatorData) {
+    try {
+      const res = await fetch('/api/creators/onboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: this.signupTemp.name,
+          username: this.signupTemp.username,
+          email: this.signupTemp.email,
+          displayName: creatorData.displayName,
+          bio: creatorData.bio,
+          avatarUrl: creatorData.avatarUrl,
+          bannerUrl: creatorData.bannerUrl,
+          theme: creatorData.theme,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        this.user = data.user;
+        this.selectedCreatorId = data.campaignId;
+        this.activeView = 'creator-studio';
+        this.saveUser();
+        await Promise.all([this.fetchCreators(), this.fetchPosts()]);
+        closeModal();
+        renderApp();
+      }
+    } catch (err) {
+      console.error('Failed to onboard creator:', err);
     }
   }
 }
@@ -473,56 +488,23 @@ function showCreatorOnboardingModal() {
     document.getElementById('preview-accent-box').style.backgroundColor = `rgb(${currentAccent.r}, ${currentAccent.g}, ${currentAccent.b})`;
   };
 
-  ['pr', 'pg', 'pb', 'ar', 'ag', 'ab'].forEach(id => {
+  ['pr', 'pg', 'pb', 'ar', 'ag', 'ab'].forEach((id) => {
     document.getElementById(`slider-${id}`).addEventListener('input', updateRGBPreviews);
   });
 
   document.getElementById('creator-onboarding-form').addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const newCreatorId = 'creator-' + Date.now();
-    const newCreator = {
-      id: newCreatorId,
-      handle: store.signupTemp.username,
+    store.onboardCreator({
       displayName: document.getElementById('creator-display-name').value,
       bio: document.getElementById('creator-bio').value,
       avatarUrl: document.getElementById('creator-avatar-url').value,
       bannerUrl: document.getElementById('creator-banner-url').value,
-      category: 'Digital Art & Music',
       theme: {
         primaryColor: currentPrimary,
-        accentColor: currentAccent
+        accentColor: currentAccent,
       },
-      subscribersCount: 1,
-      monthlyRevenue: 0,
-      tiers: [
-        {
-          id: 'tier-' + Date.now(),
-          name: 'FOUNDING MEMBER',
-          price: 5,
-          description: 'Early access to posts, project updates, and exclusive creator content.',
-          perks: ['Founding Member Badge', 'Subscriber Posts Access', 'Direct Chat Access']
-        }
-      ]
-    };
-
-    store.creators.push(newCreator);
-
-    store.user = {
-      id: 'user-' + Date.now(),
-      name: store.signupTemp.name,
-      username: store.signupTemp.username,
-      role: 'creator',
-      subscribedCreatorIds: [newCreatorId],
-      creatorProfileId: newCreatorId
-    };
-
-    store.selectedCreatorId = newCreatorId;
-    store.activeView = 'creator-studio';
-    store.save();
-
-    closeModal();
-    renderApp();
+    });
   });
 }
 
@@ -558,7 +540,9 @@ function showSubscriberOnboardingModal() {
         <h4 style="font-size: 0.9rem; margin-bottom: 0.6rem;">RECOMMENDED CREATORS FOR YOU</h4>
 
         <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-          ${store.creators.map(c => `
+          ${store.creators
+            .map(
+              (c) => `
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.4rem; border: 2px solid #000; background: #f9f9f9; flex-wrap: wrap; gap: 0.4rem;">
               <div style="display: flex; align-items: center; gap: 0.6rem;">
                 <img src="${c.avatarUrl}" style="width: 36px; height: 36px; border: 2px solid #000; object-fit: cover;">
@@ -571,7 +555,9 @@ function showSubscriberOnboardingModal() {
                 <input type="checkbox" name="sub-creator" value="${c.id}" checked> FOLLOW
               </label>
             </div>
-          `).join('')}
+          `
+            )
+            .join('')}
         </div>
       </div>
 
@@ -586,22 +572,28 @@ function showSubscriberOnboardingModal() {
 
   document.getElementById('btn-sub-onboarding-back').addEventListener('click', showCredentialFormModal);
 
-  document.getElementById('subscriber-onboarding-form').addEventListener('submit', (e) => {
+  document.getElementById('subscriber-onboarding-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const selectedCreators = Array.from(document.querySelectorAll('input[name="sub-creator"]:checked')).map(cb => cb.value);
+    const selectedCreators = Array.from(document.querySelectorAll('input[name="sub-creator"]:checked')).map(
+      (cb) => cb.value
+    );
 
     store.user = {
-      id: 'user-' + Date.now(),
-      name: store.signupTemp.name || 'Subscriber User',
-      username: store.signupTemp.username || 'sub_user',
+      id: '00000000-0000-0000-0000-000000000004', // John Doe patron ID
+      name: store.signupTemp.name || 'John Doe',
+      username: store.signupTemp.username || 'johndoe',
       role: 'subscriber',
-      subscribedCreatorIds: selectedCreators.length > 0 ? selectedCreators : ['creator-1'],
-      creatorProfileId: null
+      subscribedCreatorIds: selectedCreators,
+      creatorProfileId: null,
     };
 
     store.activeView = 'feed';
-    store.save();
+    store.saveUser();
+
+    for (const cId of selectedCreators) {
+      await store.subscribeToCreator(cId, null, 5);
+    }
 
     closeModal();
     renderApp();
@@ -610,6 +602,10 @@ function showSubscriberOnboardingModal() {
 
 // Creator Studio Metrics & Post Creation Component
 function renderCreatorStudioMetricsAndPostTool(creator) {
+  if (!creator) {
+    return `<div class="brutal-card"><h3>No creator profile found</h3></div>`;
+  }
+
   const posts = store.getPostsByCreator(creator.id);
 
   return `
@@ -630,7 +626,7 @@ function renderCreatorStudioMetricsAndPostTool(creator) {
         <div class="brutal-card" style="border-width: 3px; background: #ffffff;">
           <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #666;">ACTIVE SUBSCRIBERS</span>
           <div style="font-size: 2.2rem; font-weight: 900; margin-top: 0.2rem;">${creator.subscribersCount}</div>
-          <span class="brutal-badge brutal-badge-accent" style="margin-top: 0.5rem;">+12% THIS MONTH</span>
+          <span class="brutal-badge brutal-badge-accent" style="margin-top: 0.5rem;">DB SYNCED</span>
         </div>
 
         <div class="brutal-card" style="border-width: 3px; background: #ffffff;">
@@ -642,7 +638,7 @@ function renderCreatorStudioMetricsAndPostTool(creator) {
         <div class="brutal-card" style="border-width: 3px; background: #ffffff;">
           <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #666;">PUBLISHED POSTS</span>
           <div style="font-size: 2.2rem; font-weight: 900; margin-top: 0.2rem;">${posts.length}</div>
-          <span class="brutal-badge brutal-badge-black" style="margin-top: 0.5rem;">${posts.filter(p => p.isExclusive).length} EXCLUSIVE DROPS</span>
+          <span class="brutal-badge brutal-badge-black" style="margin-top: 0.5rem;">${posts.filter((p) => p.isExclusive).length} EXCLUSIVE DROPS</span>
         </div>
       </div>
 
@@ -656,7 +652,12 @@ function renderCreatorStudioMetricsAndPostTool(creator) {
         <div class="grid-main-side">
           <div>
             <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">PUBLISHED CONTENT FEED</h3>
-            ${posts.length === 0 ? '<p>No posts published yet.</p>' : posts.map(p => `
+            ${
+              posts.length === 0
+                ? '<p>No posts published yet.</p>'
+                : posts
+                    .map(
+                      (p) => `
               <div class="brutal-card" style="margin-bottom: 1.2rem; border-width: 3px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
                   <h4 style="font-size: 1.05rem;">${p.title}</h4>
@@ -669,7 +670,10 @@ function renderCreatorStudioMetricsAndPostTool(creator) {
                   <span>❤️ ${p.likesCount} Likes</span>
                 </div>
               </div>
-            `).join('')}
+            `
+                    )
+                    .join('')
+            }
           </div>
 
           <!-- New Post Creator Form -->
@@ -837,14 +841,14 @@ function attachRGBStudioListeners(creator) {
     document.documentElement.style.setProperty('--accent-b', ab);
   };
 
-  ids.forEach(id => {
+  ids.forEach((id) => {
     const elem = document.getElementById(`studio-slider-${id}`);
     if (elem) elem.addEventListener('input', updateLiveVarsAndPreview);
   });
 
   const saveBtn = document.getElementById('btn-save-rgb-theme');
   if (saveBtn) {
-    saveBtn.addEventListener('click', () => {
+    saveBtn.addEventListener('click', async () => {
       const pr = parseInt(document.getElementById('studio-slider-pr').value);
       const pg = parseInt(document.getElementById('studio-slider-pg').value);
       const pb = parseInt(document.getElementById('studio-slider-pb').value);
@@ -856,20 +860,25 @@ function attachRGBStudioListeners(creator) {
       const avatarUrl = document.getElementById('studio-avatar-url').value;
       const bannerUrl = document.getElementById('studio-banner-url').value;
 
-      store.updateCreatorTheme(creator.id, {
-        primaryColor: { r: pr, g: pg, b: pb },
-        accentColor: { r: ar, g: ag, b: ab }
-      });
+      await store.updateCreatorThemeAndMedia(
+        creator.id,
+        {
+          primaryColor: { r: pr, g: pg, b: pb },
+          accentColor: { r: ar, g: ag, b: ab },
+        },
+        avatarUrl,
+        bannerUrl
+      );
 
-      store.updateCreatorProfile(creator.id, { avatarUrl, bannerUrl });
-      alert('RGB Theme and Media Assets updated successfully!');
-      renderApp();
+      alert('RGB Theme and Media Assets synced to Database!');
     });
   }
 }
 
 // Creator Public Profile Page Renderer
 function renderCreatorPublicProfilePage(creator) {
+  if (!creator) return `<div class="brutal-card"><p>Creator not found.</p></div>`;
+
   document.documentElement.style.setProperty('--creator-r', creator.theme.primaryColor.r);
   document.documentElement.style.setProperty('--creator-g', creator.theme.primaryColor.g);
   document.documentElement.style.setProperty('--creator-b', creator.theme.primaryColor.b);
@@ -899,13 +908,17 @@ function renderCreatorPublicProfilePage(creator) {
           <p style="font-weight: 700; font-size: 0.9rem; color: #444;">@${creator.handle} • ${creator.category}</p>
         </div>
         <div>
-          ${isSubscribed ? `
+          ${
+            isSubscribed
+              ? `
             <button class="brutal-btn brutal-btn-black" disabled style="opacity: 0.9;">✓ SUBSCRIBED</button>
-          ` : `
+          `
+              : `
             <button class="brutal-btn brutal-btn-creator" id="btn-subscribe-header">
               ⚡ SUBSCRIBE ($${creator.tiers[0]?.price || 5}/MO)
             </button>
-          `}
+          `
+          }
         </div>
       </div>
 
@@ -926,9 +939,10 @@ function renderCreatorPublicProfilePage(creator) {
 
           ${posts.length === 0 ? '<div class="brutal-card"><p>No posts published by this creator yet.</p></div>' : ''}
 
-          ${posts.map(p => {
-            if (p.isExclusive && !isSubscribed) {
-              return `
+          ${posts
+            .map((p) => {
+              if (p.isExclusive && !isSubscribed) {
+                return `
                 <div class="post-locked-card" style="margin-bottom: 1.2rem;">
                   <span class="brutal-badge brutal-badge-accent" style="margin-bottom: 0.8rem;">🔒 EXCLUSIVE SUBSCRIBER DROP</span>
                   <h3 style="font-size: 1.3rem; color: #fff; margin-bottom: 0.4rem;">${p.title}</h3>
@@ -940,9 +954,9 @@ function renderCreatorPublicProfilePage(creator) {
                   </button>
                 </div>
               `;
-            }
+              }
 
-            return `
+              return `
               <div class="brutal-card" style="margin-bottom: 1.2rem; border-width: 3px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.4rem;">
                   <div>
@@ -960,11 +974,12 @@ function renderCreatorPublicProfilePage(creator) {
                   <button class="brutal-btn brutal-btn-sm btn-like-post" data-id="${p.id}">
                     ❤️ LIKE (${p.likesCount})
                   </button>
-                  <span style="font-weight: 700; font-size: 0.8rem;">💬 12 COMMENTS</span>
+                  <span style="font-weight: 700; font-size: 0.8rem;">💬 ACTIVE DROP</span>
                 </div>
               </div>
             `;
-          }).join('')}
+            })
+            .join('')}
         </div>
 
         <div>
@@ -972,7 +987,9 @@ function renderCreatorPublicProfilePage(creator) {
             ⚡ MEMBERSHIP TIERS
           </h3>
 
-          ${creator.tiers.map(t => `
+          ${creator.tiers
+            .map(
+              (t) => `
             <div class="brutal-card" style="margin-bottom: 1rem; border-width: 3px; background: #ffffff;">
               <span class="brutal-badge brutal-badge-creator" style="margin-bottom: 0.4rem;">SUBSCRIPTION TIER</span>
               <h4 style="font-size: 1.2rem; margin-top: 0.2rem;">${t.name}</h4>
@@ -982,18 +999,24 @@ function renderCreatorPublicProfilePage(creator) {
               <p style="font-size: 0.8rem; margin-bottom: 0.8rem; color: #333;">${t.description}</p>
 
               <ul style="list-style: none; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.8rem; font-weight: 700;">
-                ${t.perks.map(perk => `<li>✓ ${perk}</li>`).join('')}
+                ${t.perks.map((perk) => `<li>✓ ${perk}</li>`).join('')}
               </ul>
 
-              ${isSubscribed ? `
+              ${
+                isSubscribed
+                  ? `
                 <button class="brutal-btn brutal-btn-black" disabled style="width: 100%; opacity: 0.8;">CURRENT PLAN</button>
-              ` : `
+              `
+                  : `
                 <button class="brutal-btn brutal-btn-creator btn-join-tier" data-tier="${t.id}" data-price="${t.price}" style="width: 100%;">
                   JOIN TIER NOW &rarr;
                 </button>
-              `}
+              `
+              }
             </div>
-          `).join('')}
+          `
+            )
+            .join('')}
         </div>
       </div>
     </div>
@@ -1001,14 +1024,14 @@ function renderCreatorPublicProfilePage(creator) {
 }
 
 // Tier Purchase Modal
-function showTierPurchaseModal(creatorId, tierPrice) {
+function showTierPurchaseModal(creatorId, tierId, tierPrice) {
   const creator = store.getCreator(creatorId);
 
   const html = `
     <div style="text-align: center; margin-bottom: 1.2rem;">
       <span class="brutal-badge brutal-badge-black">SUBSCRIBE TO CREATOR</span>
       <h2 style="font-size: 1.4rem; margin-top: 0.4rem;">CONFIRM SUBSCRIPTION</h2>
-      <p style="font-size: 0.85rem;">Supporting <strong>${creator.displayName}</strong></p>
+      <p style="font-size: 0.85rem;">Supporting <strong>${creator ? creator.displayName : 'Creator'}</strong></p>
     </div>
 
     <div class="brutal-card" style="border-width: 3px; background: #fdfdfd; margin-bottom: 1.2rem;">
@@ -1024,7 +1047,7 @@ function showTierPurchaseModal(creatorId, tierPrice) {
     <form id="tier-checkout-form" style="display: flex; flex-direction: column; gap: 0.8rem;">
       <div>
         <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">CARDHOLDER NAME</label>
-        <input type="text" class="brutal-input" value="${store.user.name || 'JORDAN VANCE'}" required>
+        <input type="text" class="brutal-input" value="${store.user.name || 'JOHN DOE'}" required>
       </div>
 
       <div>
@@ -1040,22 +1063,22 @@ function showTierPurchaseModal(creatorId, tierPrice) {
 
   openModal(html);
 
-  document.getElementById('tier-checkout-form').addEventListener('submit', (e) => {
+  document.getElementById('tier-checkout-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    store.subscribeToCreator(creatorId);
+    await store.subscribeToCreator(creatorId, tierId, tierPrice);
     closeModal();
-    alert(`Successfully subscribed to ${creator.displayName}! Exclusive content unlocked.`);
-    renderApp();
+    alert(`Successfully subscribed to creator! Exclusive content unlocked in PostgreSQL DB.`);
   });
 }
 
 // Enhanced Homepage / Explore Page Renderer
 function renderExploreCreatorsPage() {
-  const categories = ['ALL', 'Digital Art & Music', 'Architecture & Design', 'Tech & Code'];
+  const categories = ['ALL', 'Podcasts', 'Gaming', 'Digital Art & Music', 'Architecture & Design', 'Tech & Code'];
 
-  const filteredCreators = store.creators.filter(c => {
+  const filteredCreators = store.creators.filter((c) => {
     const matchesCategory = store.filterCategory === 'ALL' || c.category === store.filterCategory;
-    const matchesQuery = store.searchQuery === '' ||
+    const matchesQuery =
+      store.searchQuery === '' ||
       c.displayName.toLowerCase().includes(store.searchQuery.toLowerCase()) ||
       c.handle.toLowerCase().includes(store.searchQuery.toLowerCase()) ||
       c.bio.toLowerCase().includes(store.searchQuery.toLowerCase());
@@ -1090,12 +1113,12 @@ function renderExploreCreatorsPage() {
       <!-- Stats Ticker Bar -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-bottom: 2rem;">
         <div class="brutal-card" style="text-align: center; border-width: 3px; padding: 0.8rem;">
-          <div style="font-size: 1.5rem; font-weight: 900;">$1.2M+</div>
-          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">PAID TO CREATORS</div>
+          <div style="font-size: 1.5rem; font-weight: 900;">POSTGRESQL</div>
+          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">DATABASE BACKED</div>
         </div>
         <div class="brutal-card" style="text-align: center; border-width: 3px; padding: 0.8rem;">
-          <div style="font-size: 1.5rem; font-weight: 900;">10,000+</div>
-          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">ACTIVE SUBSCRIBERS</div>
+          <div style="font-size: 1.5rem; font-weight: 900;">100% SYNCED</div>
+          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">REALTIME REST API</div>
         </div>
         <div class="brutal-card" style="text-align: center; border-width: 3px; padding: 0.8rem;">
           <div style="font-size: 1.5rem; font-weight: 900;">100% RGB</div>
@@ -1111,11 +1134,15 @@ function renderExploreCreatorsPage() {
       <div style="margin-bottom: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.2rem;">
           <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-            ${categories.map(cat => `
+            ${categories
+              .map(
+                (cat) => `
               <button class="brutal-btn brutal-btn-sm category-filter-btn ${store.filterCategory === cat ? 'brutal-btn-black' : ''}" data-category="${cat}">
                 ${cat}
               </button>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
 
           <div style="flex: 1; min-width: 220px; max-width: 100%;">
@@ -1129,14 +1156,19 @@ function renderExploreCreatorsPage() {
         FEATURED CREATOR HOMEPAGES
       </h2>
 
-      ${filteredCreators.length === 0 ? `
+      ${
+        filteredCreators.length === 0
+          ? `
         <div class="brutal-card" style="text-align: center; padding: 1.5rem;">
           <h3>NO CREATORS MATCH YOUR SEARCH</h3>
           <p>Try searching for a different handle or selecting "ALL" categories.</p>
         </div>
-      ` : `
+      `
+          : `
         <div class="grid-2" id="explore-creators-grid">
-          ${filteredCreators.map(c => `
+          ${filteredCreators
+            .map(
+              (c) => `
             <div class="brutal-card brutal-card-interactive btn-open-creator-profile" data-id="${c.id}" style="border-width: 3px; padding: 0; overflow: hidden; background: #fff;">
               <div style="height: 110px; background-image: url('${c.bannerUrl}'); background-size: cover; background-position: center; border-bottom: 3px solid #000; position: relative;">
                 <span class="brutal-badge" style="position: absolute; top: 8px; right: 8px; background: rgb(${c.theme.primaryColor.r}, ${c.theme.primaryColor.g}, ${c.theme.primaryColor.b}); color: #000;">
@@ -1158,16 +1190,19 @@ function renderExploreCreatorsPage() {
                 </div>
               </div>
             </div>
-          `).join('')}
+          `
+            )
+            .join('')}
         </div>
-      `}
+      `
+      }
     </div>
   `;
 }
 
 // Subscriber Feed Page Renderer
 function renderSubscriberFeedPage() {
-  const subscribedPosts = store.posts.filter(p => store.user.subscribedCreatorIds.includes(p.creatorId));
+  const subscribedPosts = store.posts.filter((p) => store.user.subscribedCreatorIds.includes(p.creatorId));
 
   return `
     <div style="max-width: 800px; margin: 0 auto;">
@@ -1179,22 +1214,26 @@ function renderSubscriberFeedPage() {
         </p>
       </div>
 
-      ${subscribedPosts.length === 0 ? `
+      ${
+        subscribedPosts.length === 0
+          ? `
         <div class="brutal-card" style="text-align: center; padding: 2rem 1rem;">
           <h2 style="font-size: 1.3rem; margin-bottom: 0.4rem;">NO SUBSCRIBED CREATORS YET</h2>
           <p style="margin-bottom: 1.2rem;">Discover and subscribe to creators to see their exclusive drops here.</p>
           <button class="brutal-btn brutal-btn-black" id="btn-goto-explore">EXPLORE CREATORS NOW &rarr;</button>
         </div>
-      ` : subscribedPosts.map(p => {
-        const creator = store.getCreator(p.creatorId);
-        return `
+      `
+          : subscribedPosts
+              .map((p) => {
+                const creator = store.getCreator(p.creatorId);
+                return `
           <div class="brutal-card" style="margin-bottom: 1.5rem; border-width: 3px; background: #ffffff;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; border-bottom: 2px solid #000; padding-bottom: 0.6rem; flex-wrap: wrap; gap: 0.4rem;">
-              <div style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer;" class="btn-open-creator-profile" data-id="${creator.id}">
-                <img src="${creator.avatarUrl}" style="width: 42px; height: 42px; border: 2px solid #000; object-fit: cover;">
+              <div style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer;" class="btn-open-creator-profile" data-id="${creator ? creator.id : p.creatorId}">
+                <img src="${creator ? creator.avatarUrl : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80'}" style="width: 42px; height: 42px; border: 2px solid #000; object-fit: cover;">
                 <div>
-                  <strong style="display: block; font-size: 0.95rem;">${creator.displayName}</strong>
-                  <span style="font-size: 0.75rem; font-weight: 700; color: #555;">@${creator.handle} • 🕒 ${p.createdAt}</span>
+                  <strong style="display: block; font-size: 0.95rem;">${creator ? creator.displayName : 'Creator'}</strong>
+                  <span style="font-size: 0.75rem; font-weight: 700; color: #555;">@${creator ? creator.handle : 'creator'} • 🕒 ${p.createdAt}</span>
                 </div>
               </div>
               ${p.isExclusive ? '<span class="brutal-badge brutal-badge-accent">🔒 EXCLUSIVE UNLOCKED</span>' : '<span class="brutal-badge">PUBLIC DROP</span>'}
@@ -1209,13 +1248,15 @@ function renderSubscriberFeedPage() {
               <button class="brutal-btn brutal-btn-sm btn-like-post" data-id="${p.id}">
                 ❤️ LIKE (${p.likesCount})
               </button>
-              <button class="brutal-btn brutal-btn-sm btn-open-creator-profile" data-id="${creator.id}">
+              <button class="brutal-btn brutal-btn-sm btn-open-creator-profile" data-id="${creator ? creator.id : p.creatorId}">
                 VISIT HOMEPAGE ↗
               </button>
             </div>
           </div>
         `;
-      }).join('')}
+              })
+              .join('')
+      }
     </div>
   `;
 }
@@ -1281,20 +1322,29 @@ function renderNavbarControls() {
     showRoleSelectionModal();
   });
 
-  document.getElementById('role-switcher-select')?.addEventListener('change', (e) => {
+  document.getElementById('role-switcher-select')?.addEventListener('change', async (e) => {
     const val = e.target.value;
     if (val === 'guest') {
-      store.user = { id: 'user-guest', name: 'Visitor Guest', username: 'guest', role: 'guest', subscribedCreatorIds: ['creator-1'], creatorProfileId: null };
+      store.user = { id: 'user-guest', name: 'Visitor Guest', username: 'guest', role: 'guest', subscribedCreatorIds: [], creatorProfileId: null };
       store.activeView = 'explore';
     } else if (val === 'subscriber') {
-      store.user = { id: 'user-sub', name: 'Jordan Vance', username: 'jordan_v', role: 'subscriber', subscribedCreatorIds: ['creator-1'], creatorProfileId: null };
+      store.user = { id: '00000000-0000-0000-0000-000000000004', name: 'John Doe', username: 'johndoe', role: 'subscriber', subscribedCreatorIds: [], creatorProfileId: null };
+      await store.fetchUserSubscriptions();
       store.activeView = 'feed';
     } else if (val === 'creator') {
-      store.user = { id: 'user-creator-1', name: 'Alex Rivers', username: 'pixelpunk', role: 'creator', subscribedCreatorIds: ['creator-1'], creatorProfileId: 'creator-1' };
-      store.selectedCreatorId = 'creator-1';
+      const creator = store.creators[0];
+      store.user = {
+        id: creator ? creator.creatorId : '00000000-0000-0000-0000-000000000002',
+        name: creator ? creator.displayName : 'Alex Rivera',
+        username: creator ? creator.handle : 'techoverload',
+        role: 'creator',
+        subscribedCreatorIds: creator ? [creator.id] : [],
+        creatorProfileId: creator ? creator.id : null,
+      };
+      if (creator) store.selectedCreatorId = creator.id;
       store.activeView = 'creator-studio';
     }
-    store.save();
+    store.saveUser();
     renderApp();
   });
 }
@@ -1304,6 +1354,11 @@ function renderApp() {
   renderNavbarControls();
 
   const main = document.getElementById('main-content');
+
+  if (store.isLoading) {
+    main.innerHTML = `<div class="brutal-card" style="text-align: center; padding: 2rem;"><h2>LOADING PLATFORM DATA FROM POSTGRESQL...</h2></div>`;
+    return;
+  }
 
   if (store.activeView === 'explore') {
     main.innerHTML = renderExploreCreatorsPage();
@@ -1315,7 +1370,7 @@ function renderApp() {
       renderApp();
     });
 
-    document.querySelectorAll('.category-filter-btn').forEach(btn => {
+    document.querySelectorAll('.category-filter-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         store.filterCategory = e.currentTarget.getAttribute('data-category') || 'ALL';
         renderApp();
@@ -1326,9 +1381,10 @@ function renderApp() {
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         store.searchQuery = e.target.value;
-        const filteredCreators = store.creators.filter(c => {
+        const filteredCreators = store.creators.filter((c) => {
           const matchesCategory = store.filterCategory === 'ALL' || c.category === store.filterCategory;
-          const matchesQuery = store.searchQuery === '' ||
+          const matchesQuery =
+            store.searchQuery === '' ||
             c.displayName.toLowerCase().includes(store.searchQuery.toLowerCase()) ||
             c.handle.toLowerCase().includes(store.searchQuery.toLowerCase()) ||
             c.bio.toLowerCase().includes(store.searchQuery.toLowerCase());
@@ -1337,7 +1393,9 @@ function renderApp() {
 
         const grid = document.getElementById('explore-creators-grid');
         if (grid) {
-          grid.innerHTML = filteredCreators.map(c => `
+          grid.innerHTML = filteredCreators
+            .map(
+              (c) => `
             <div class="brutal-card brutal-card-interactive btn-open-creator-profile" data-id="${c.id}" style="border-width: 3px; padding: 0; overflow: hidden; background: #fff;">
               <div style="height: 110px; background-image: url('${c.bannerUrl}'); background-size: cover; background-position: center; border-bottom: 3px solid #000; position: relative;">
                 <span class="brutal-badge" style="position: absolute; top: 8px; right: 8px; background: rgb(${c.theme.primaryColor.r}, ${c.theme.primaryColor.g}, ${c.theme.primaryColor.b}); color: #000;">
@@ -1359,10 +1417,12 @@ function renderApp() {
                 </div>
               </div>
             </div>
-          `).join('');
+          `
+            )
+            .join('');
 
           // Rebind click listeners on dynamic filtered items
-          document.querySelectorAll('.btn-open-creator-profile').forEach(btn => {
+          document.querySelectorAll('.btn-open-creator-profile').forEach((btn) => {
             btn.addEventListener('click', (ev) => {
               const id = ev.currentTarget.getAttribute('data-id');
               if (id) {
@@ -1375,20 +1435,19 @@ function renderApp() {
         }
       });
     }
-
   } else if (store.activeView === 'feed') {
     main.innerHTML = renderSubscriberFeedPage();
   } else if (store.activeView === 'creator-page') {
     const creator = store.getCreator(store.selectedCreatorId);
     main.innerHTML = renderCreatorPublicProfilePage(creator);
   } else if (store.activeView === 'creator-studio') {
-    const creatorId = store.user.creatorProfileId || store.selectedCreatorId || 'creator-1';
+    const creatorId = store.user.creatorProfileId || store.selectedCreatorId || (store.creators[0] ? store.creators[0].id : null);
     const creator = store.getCreator(creatorId);
     main.innerHTML = renderCreatorStudioMetricsAndPostTool(creator);
 
     // Studio Event Listeners
     document.getElementById('btn-view-public-page')?.addEventListener('click', () => {
-      store.selectedCreatorId = creator.id;
+      if (creator) store.selectedCreatorId = creator.id;
       store.activeView = 'creator-page';
       renderApp();
     });
@@ -1406,36 +1465,33 @@ function renderApp() {
     themeTab?.addEventListener('click', () => {
       themeTab.classList.add('active');
       postsTab.classList.remove('active');
-      studioMainArea.innerHTML = renderRGBThemeStudioControls(creator);
-      attachRGBStudioListeners(creator);
+      if (creator) {
+        studioMainArea.innerHTML = renderRGBThemeStudioControls(creator);
+        attachRGBStudioListeners(creator);
+      }
     });
 
-    document.getElementById('studio-create-post-form')?.addEventListener('submit', (e) => {
+    document.getElementById('studio-create-post-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = document.getElementById('post-title').value;
       const content = document.getElementById('post-content').value;
       const imageUrl = document.getElementById('post-image-url').value;
       const visibility = document.getElementById('post-visibility').value;
 
-      const newPost = {
-        id: 'post-' + Date.now(),
-        creatorId: creator.id,
+      await store.addPost({
+        creatorId: creator ? creator.id : store.selectedCreatorId,
         title,
         content,
         imageUrl: imageUrl || undefined,
-        createdAt: 'Just now',
         isExclusive: visibility === 'exclusive',
-        likesCount: 0
-      };
+      });
 
-      store.addPost(newPost);
-      alert('New drop published successfully!');
-      renderApp();
+      alert('New drop published and saved to PostgreSQL!');
     });
   }
 
   // Bind Global Dynamic Action Listeners
-  document.querySelectorAll('.btn-open-creator-profile').forEach(btn => {
+  document.querySelectorAll('.btn-open-creator-profile').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const id = e.currentTarget.getAttribute('data-id');
       if (id) {
@@ -1446,22 +1502,20 @@ function renderApp() {
     });
   });
 
-  document.querySelectorAll('.btn-unlock-paywall, .btn-join-tier, #btn-subscribe-header').forEach(btn => {
+  document.querySelectorAll('.btn-unlock-paywall, .btn-join-tier, #btn-subscribe-header').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       const creatorId = e.currentTarget.getAttribute('data-creator') || store.selectedCreatorId;
+      const tierId = e.currentTarget.getAttribute('data-tier') || null;
       const price = e.currentTarget.getAttribute('data-price') || 5;
-      showTierPurchaseModal(creatorId, price);
+      showTierPurchaseModal(creatorId, tierId, price);
     });
   });
 
-  document.querySelectorAll('.btn-like-post').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  document.querySelectorAll('.btn-like-post').forEach((btn) => {
+    btn.addEventListener('click', async (e) => {
       const id = e.currentTarget.getAttribute('data-id');
-      const post = store.posts.find(p => p.id === id);
-      if (post) {
-        post.likesCount += 1;
-        store.save();
-        renderApp();
+      if (id) {
+        await store.likePost(id);
       }
     });
   });
@@ -1481,5 +1535,5 @@ document.getElementById('logo-btn').addEventListener('click', (e) => {
 
 // App Initialization
 window.addEventListener('DOMContentLoaded', () => {
-  renderApp();
+  store.init();
 });

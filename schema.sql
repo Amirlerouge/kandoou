@@ -83,6 +83,7 @@ CREATE TABLE campaigns (
     is_nsfw BOOLEAN NOT NULL DEFAULT FALSE,
     is_published BOOLEAN NOT NULL DEFAULT FALSE,
     published_at TIMESTAMP WITH TIME ZONE,
+    theme JSONB DEFAULT '{"primaryColor": {"r": 255, "g": 87, "b": 34}, "accentColor": {"r": 255, "g": 235, "b": 59}}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT unique_creator_campaign UNIQUE(creator_id)
