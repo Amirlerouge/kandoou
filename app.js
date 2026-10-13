@@ -4,13 +4,100 @@ const STORAGE_KEYS = {
   CREATORS: 'brutal_creators_v1',
   POSTS: 'brutal_posts_v1',
   USER: 'brutal_current_user_v1',
+  LANG: 'brutal_lang_v1',
 };
+
+// Farsi Translation Dictionary
+const TRANSLATIONS = {
+  'The ultra-simple platform where creators customize their RGB homepages, publish exclusive drops, and monetize directly through subscriber tiers.': 'پلتفرم فوق‌العاده ساده که در آن سازندگان صفحات اصلی RGB خود را سفارشی می‌کنند، محتوای اختصاصی منتشر می‌کنند و مستقیماً از طریق سطوح اشتراک کسب درآمد می‌کنند.',
+  'DATABASE BACKED': 'پشتیبانی از پایگاه داده',
+  'REALTIME REST API': 'API REST بلادرنگ',
+  'CUSTOM THEMED PAGES': 'صفحات با تم سفارشی',
+  'PURE BRUTALIST UI': 'رابط کاربری خالص بروتالیست',
+  'EXPLORE': 'کاوش',
+  'MY FEED': 'فید من',
+  'CREATOR STUDIO': 'استودیو سازنده',
+  'GUEST MODE': 'حالت مهمان',
+  'SUBSCRIBER MODE': 'حالت مشترک',
+  'CREATOR MODE': 'حالت سازنده',
+  'SIGN UP FUNNEL': 'ثبت نام',
+  'SEARCH_PLACEHOLDER': 'جستجوی سازندگان یا موضوعات...',
+  'START CREATING NOW 🎨': 'شروع به ساختن کنید 🎨',
+  'EXPLORE DROPS ⚡': 'کاوش در محتوا ⚡',
+  'SUBSCRIBED': '✓ مشترک شدید',
+  'SUBSCRIBE': '⚡ اشتراک',
+  'MONTH': 'ماه',
+  'LIKE': 'لایک',
+  'VISIT HOMEPAGE ↗': 'مشاهده صفحه ↗',
+  'NO CREATORS MATCH YOUR SEARCH': 'هیچ سازنده‌ای با جستجوی شما مطابقت ندارد',
+  'FEATURED CREATOR HOMEPAGES': 'صفحات برگزیده سازندگان',
+  'POSTS DROPPED': 'پست منتشر شده',
+  'SUBSCRIBERS': 'مشترک',
+  'MEMBERSHIP TIERS': 'سطوح اشتراک',
+  'CREATOR DASHBOARD': 'داشبورد سازنده',
+  'ACTIVE SUBSCRIBERS': 'مشترکین فعال',
+  'ESTIMATED MONTHLY REVENUE': 'درآمد ماهانه تخمینی',
+  'PUBLISHED POSTS': 'پست‌های منتشر شده',
+  'POST MANAGEMENT': 'مدیریت پست',
+  'RGB THEME CUSTOMIZER': 'تنظیم رنگ RGB',
+  'PUBLISHED CONTENT FEED': 'محتوای منتشر شده',
+  'CREATE NEW POST': 'ایجاد پست جدید',
+  'PUBLISH DROP NOW 🚀': 'انتشار محتوا 🚀',
+  'SAVE CHANGES': 'ذخیره تغییرات',
+  'RGB COLOR ENGINE': 'موتور رنگ RGB',
+  'LIVE RGB THEME CUSTOMIZER': 'سفارشی‌سازی زنده رنگ تم',
+  'PRIMARY RGB COLOR': 'رنگ اصلی RGB',
+  'ACCENT RGB COLOR': 'رنگ دوم RGB',
+  'PROFILE AVATAR': 'آواتار پروفایل',
+  'BANNER COVER': 'بنر پروفایل',
+  'CONFIRM SUBSCRIPTION': 'تایید اشتراک',
+  'MONTHLY SUBSCRIPTION': 'اشتراک ماهانه',
+  'CARDHOLDER NAME': 'نام دارنده کارت',
+  'CARD NUMBER (SIMULATED)': 'شماره کارت (آزمایشی)',
+  'CONFIRM & PAY': 'تایید و پرداخت',
+  'SELECT ACCOUNT TYPE': 'انتخاب نوع حساب',
+  'CREATOR': 'سازنده',
+  'SUBSCRIBER': 'مشترک',
+  'CONTINUE &rarr;': 'ادامه &rarr;',
+  'CREATE YOUR CREDENTIALS': 'ایجاد اطلاعات حساب',
+  'FULL NAME': 'نام کامل',
+  'USERNAME / HANDLE': 'نام کاربری',
+  'EMAIL ADDRESS': 'ایمیل',
+  'PASSWORD': 'رمز عبور',
+  '&larr; BACK': '&larr; بازگشت',
+  'NEXT STEP &rarr;': 'مرحله بعد &rarr;',
+  'CUSTOMIZE YOUR CREATOR BRAND': 'برند خود را سفارشی کنید',
+  'CREATOR BRAND NAME': 'نام برند سازنده',
+  'BIO / DESCRIPTION': 'بیوگرافی / توضیحات',
+  'LAUNCH CREATOR PAGE 🎉': 'راه‌اندازی صفحه سازنده 🎉',
+  'WHAT DO YOU WANT TO EXPLORE?': 'چه چیزی را می‌خواهید کاوش کنید؟',
+  'RECOMMENDED CREATORS FOR YOU': 'سازندگان پیشنهادی برای شما',
+  'ENTER PLATFORM 🚀': 'ورود به پلتفرم 🚀',
+  'LOADING PLATFORM DATA FROM POSTGRESQL...': 'در حال بارگذاری داده‌های پلتفرم از PostgreSQL...',
+  'MONOCHROME & RGB CUSTOM CREATOR PLATFORM': 'پلتفرم سفارشی رنگی و تک‌رنگ سازندگان',
+  'BUILD YOUR FANBASE IN': 'طرفداران خود را بسازید',
+  'STARK NEUBRUTALISM': 'نئوبروتالیسم خشن',
+  'ALL': 'همه',
+  'Podcasts': 'پادکست‌ها',
+  'Gaming': 'گیمینگ',
+  'Digital Art & Music': 'هنر دیجیتال و موسیقی',
+  'Architecture & Design': 'معماری و طراحی',
+  'Tech & Code': 'تکنولوژی و برنامه‌نویسی'
+};
+
+function t(key) {
+  if (store && store.language === 'fa' && TRANSLATIONS[key]) {
+    return TRANSLATIONS[key];
+  }
+  return key;
+}
 
 // Global Application State Store with API Syncing
 class Store {
   constructor() {
     this.creators = [];
     this.posts = [];
+    this.language = localStorage.getItem(STORAGE_KEYS.LANG) || 'en';
     this.user = this.loadUser();
     this.activeView = 'explore';
     this.selectedCreatorId = null;
@@ -24,6 +111,19 @@ class Store {
       email: '',
       password: '',
     };
+    this.applyLanguage();
+  }
+
+  applyLanguage() {
+    document.documentElement.lang = this.language;
+    document.documentElement.dir = this.language === 'fa' ? 'rtl' : 'ltr';
+  }
+
+  setLanguage(lang) {
+    this.language = lang;
+    localStorage.setItem(STORAGE_KEYS.LANG, lang);
+    this.applyLanguage();
+    renderApp();
   }
 
   loadUser() {
@@ -246,7 +346,7 @@ function showRoleSelectionModal() {
   const html = `
     <div style="text-align: center; margin-bottom: 1.2rem;">
       <span class="brutal-badge brutal-badge-black" style="font-size: 0.85rem;">JOIN BRUTAL.FAN</span>
-      <h2 style="font-size: 1.5rem; margin-top: 0.4rem;">SELECT ACCOUNT TYPE</h2>
+      <h2 style="font-size: 1.5rem; margin-top: 0.4rem;">${t('SELECT ACCOUNT TYPE')}</h2>
       <p style="font-size: 0.85rem; margin-top: 0.2rem;">Choose how you want to interact with the platform.</p>
     </div>
 
@@ -257,17 +357,17 @@ function showRoleSelectionModal() {
     </div>
 
     <div class="grid-2" style="margin-bottom: 1.2rem;">
-      <div class="brutal-card brutal-card-interactive" id="role-card-creator" style="border-width: 3px; border-color: #000; text-align: left;">
+      <div class="brutal-card brutal-card-interactive" id="role-card-creator" style="border-width: 3px; border-color: #000; text-align: start;">
         <div style="font-size: 1.8rem; margin-bottom: 0.3rem;">🎨</div>
-        <h3 style="font-size: 1.2rem;">CREATOR</h3>
+        <h3 style="font-size: 1.2rem;">${t('CREATOR')}</h3>
         <p style="font-size: 0.8rem; margin-top: 0.4rem; color: #444;">
           Publish posts, create subscription tiers, and <strong>custom RGB theme colorize</strong> your entire home page.
         </p>
       </div>
 
-      <div class="brutal-card brutal-card-interactive" id="role-card-subscriber" style="border-width: 3px; text-align: left;">
+      <div class="brutal-card brutal-card-interactive" id="role-card-subscriber" style="border-width: 3px; text-align: start;">
         <div style="font-size: 1.8rem; margin-bottom: 0.3rem;">⚡</div>
-        <h3 style="font-size: 1.2rem;">SUBSCRIBER</h3>
+        <h3 style="font-size: 1.2rem;">${t('SUBSCRIBER')}</h3>
         <p style="font-size: 0.8rem; margin-top: 0.4rem; color: #444;">
           Discover top creators, unlock exclusive audio & visual drops, and support creators.
         </p>
@@ -275,7 +375,7 @@ function showRoleSelectionModal() {
     </div>
 
     <button id="btn-role-next" class="brutal-btn brutal-btn-black" style="width: 100%;">
-      CONTINUE &rarr;
+      ${t('CONTINUE &rarr;')}
     </button>
   `;
 
@@ -310,7 +410,7 @@ function showCredentialFormModal() {
   const html = `
     <div style="text-align: center; margin-bottom: 1.2rem;">
       <span class="brutal-badge brutal-badge-black">STEP 2 OF 3</span>
-      <h2 style="font-size: 1.5rem; margin-top: 0.4rem;">CREATE YOUR CREDENTIALS</h2>
+      <h2 style="font-size: 1.5rem; margin-top: 0.4rem;">${t('CREATE YOUR CREDENTIALS')}</h2>
       <p style="font-size: 0.85rem; margin-top: 0.2rem;">Account Type: <strong>${store.signupTemp.role.toUpperCase()}</strong></p>
     </div>
 
@@ -322,28 +422,28 @@ function showCredentialFormModal() {
 
     <form id="signup-credentials-form" style="display: flex; flex-direction: column; gap: 0.8rem;">
       <div>
-        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">FULL NAME</label>
+        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('FULL NAME')}</label>
         <input type="text" id="input-signup-name" class="brutal-input" placeholder="e.g. Jordan Vance" required value="${store.signupTemp.name}">
       </div>
 
       <div>
-        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">USERNAME / HANDLE</label>
+        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('USERNAME / HANDLE')}</label>
         <input type="text" id="input-signup-username" class="brutal-input" placeholder="e.g. jordan_v" required value="${store.signupTemp.username}">
       </div>
 
       <div>
-        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">EMAIL ADDRESS</label>
+        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('EMAIL ADDRESS')}</label>
         <input type="email" id="input-signup-email" class="brutal-input" placeholder="jordan@example.com" required value="${store.signupTemp.email}">
       </div>
 
       <div>
-        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">PASSWORD</label>
+        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('PASSWORD')}</label>
         <input type="password" id="input-signup-password" class="brutal-input" placeholder="••••••••" required value="password123">
       </div>
 
       <div style="display: flex; gap: 0.8rem; margin-top: 0.5rem; flex-wrap: wrap;">
-        <button type="button" id="btn-signup-back" class="brutal-btn" style="flex: 1; min-width: 100px;">&larr; BACK</button>
-        <button type="submit" class="brutal-btn brutal-btn-black" style="flex: 2; min-width: 140px;">NEXT STEP &rarr;</button>
+        <button type="button" id="btn-signup-back" class="brutal-btn" style="flex: 1; min-width: 100px;">${t('&larr; BACK')}</button>
+        <button type="submit" class="brutal-btn brutal-btn-black" style="flex: 2; min-width: 140px;">${t('NEXT STEP &rarr;')}</button>
       </div>
     </form>
   `;
@@ -377,7 +477,7 @@ function showCreatorOnboardingModal() {
   const html = `
     <div style="text-align: center; margin-bottom: 1rem;">
       <span class="brutal-badge brutal-badge-black">STEP 3 OF 3: CREATOR SETUP</span>
-      <h2 style="font-size: 1.4rem; margin-top: 0.4rem;">CUSTOMIZE YOUR CREATOR BRAND</h2>
+      <h2 style="font-size: 1.4rem; margin-top: 0.4rem;">${t('CUSTOMIZE YOUR CREATOR BRAND')}</h2>
       <p style="font-size: 0.8rem; margin-top: 0.2rem;">Set profile image, cover banner, and live RGB theme colors!</p>
     </div>
 
@@ -389,23 +489,23 @@ function showCreatorOnboardingModal() {
 
     <form id="creator-onboarding-form" style="display: flex; flex-direction: column; gap: 0.8rem;">
       <div>
-        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">CREATOR BRAND NAME</label>
+        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('CREATOR BRAND NAME')}</label>
         <input type="text" id="creator-display-name" class="brutal-input" value="${store.signupTemp.name || 'Digital Creator'} Studios" required>
       </div>
 
       <div>
-        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">BIO / DESCRIPTION</label>
+        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('BIO / DESCRIPTION')}</label>
         <textarea id="creator-bio" class="brutal-textarea" style="height: 50px;" required>Creator producing high-contrast digital artifacts and exclusive drops.</textarea>
       </div>
 
       <div class="grid-2">
         <div>
-          <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">PROFILE AVATAR</label>
+          <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('PROFILE AVATAR')}</label>
           <input type="text" id="creator-avatar-url" class="brutal-input" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80" style="display: none;">
           <input type="file" id="creator-avatar-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
         </div>
         <div>
-          <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">BANNER COVER</label>
+          <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('BANNER COVER')}</label>
           <input type="text" id="creator-banner-url" class="brutal-input" value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80" style="display: none;">
           <input type="file" id="creator-banner-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
         </div>
@@ -459,8 +559,8 @@ function showCreatorOnboardingModal() {
       </div>
 
       <div style="display: flex; gap: 0.8rem; margin-top: 0.5rem; flex-wrap: wrap;">
-        <button type="button" id="btn-creator-onboarding-back" class="brutal-btn" style="flex: 1; min-width: 100px;">&larr; BACK</button>
-        <button type="submit" class="brutal-btn brutal-btn-black" style="flex: 2; min-width: 160px;">LAUNCH CREATOR PAGE 🎉</button>
+        <button type="button" id="btn-creator-onboarding-back" class="brutal-btn" style="flex: 1; min-width: 100px;">${t('&larr; BACK')}</button>
+        <button type="submit" class="brutal-btn brutal-btn-black" style="flex: 2; min-width: 160px;">${t('LAUNCH CREATOR PAGE 🎉')}</button>
       </div>
     </form>
   `;
@@ -537,7 +637,7 @@ function showSubscriberOnboardingModal() {
   const html = `
     <div style="text-align: center; margin-bottom: 1.2rem;">
       <span class="brutal-badge brutal-badge-black">STEP 3 OF 3: INTERESTS</span>
-      <h2 style="font-size: 1.5rem; margin-top: 0.4rem;">WHAT DO YOU WANT TO EXPLORE?</h2>
+      <h2 style="font-size: 1.5rem; margin-top: 0.4rem;">${t('WHAT DO YOU WANT TO EXPLORE?')}</h2>
       <p style="font-size: 0.85rem; margin-top: 0.2rem;">Select topics to personalize your feed.</p>
     </div>
 
@@ -550,18 +650,18 @@ function showSubscriberOnboardingModal() {
     <form id="subscriber-onboarding-form" style="display: flex; flex-direction: column; gap: 1rem;">
       <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
         <label class="brutal-badge brutal-card-interactive" style="padding: 0.5rem 0.8rem; cursor: pointer;">
-          <input type="checkbox" value="Digital Art & Music" checked style="margin-right: 0.3rem;"> 🎨 Digital Art & Music
+          <input type="checkbox" value="Digital Art & Music" checked style="margin-inline-end: 0.3rem;"> 🎨 ${t('Digital Art & Music')}
         </label>
         <label class="brutal-badge brutal-card-interactive" style="padding: 0.5rem 0.8rem; cursor: pointer;">
-          <input type="checkbox" value="Architecture & Design" checked style="margin-right: 0.3rem;"> 🏛️ Architecture & Design
+          <input type="checkbox" value="Architecture & Design" checked style="margin-inline-end: 0.3rem;"> 🏛️ ${t('Architecture & Design')}
         </label>
         <label class="brutal-badge brutal-card-interactive" style="padding: 0.5rem 0.8rem; cursor: pointer;">
-          <input type="checkbox" value="Tech & Code" checked style="margin-right: 0.3rem;"> 💻 Tech & Code
+          <input type="checkbox" value="Tech & Code" checked style="margin-inline-end: 0.3rem;"> 💻 ${t('Tech & Code')}
         </label>
       </div>
 
       <div style="border: 3px solid #000; padding: 0.8rem; background: #fff;">
-        <h4 style="font-size: 0.9rem; margin-bottom: 0.6rem;">RECOMMENDED CREATORS FOR YOU</h4>
+        <h4 style="font-size: 0.9rem; margin-bottom: 0.6rem;">${t('RECOMMENDED CREATORS FOR YOU')}</h4>
 
         <div style="display: flex; flex-direction: column; gap: 0.6rem;">
           ${store.creators
@@ -586,8 +686,8 @@ function showSubscriberOnboardingModal() {
       </div>
 
       <div style="display: flex; gap: 0.8rem; margin-top: 0.5rem; flex-wrap: wrap;">
-        <button type="button" id="btn-sub-onboarding-back" class="brutal-btn" style="flex: 1; min-width: 100px;">&larr; BACK</button>
-        <button type="submit" class="brutal-btn brutal-btn-black" style="flex: 2; min-width: 140px;">ENTER PLATFORM 🚀</button>
+        <button type="button" id="btn-sub-onboarding-back" class="brutal-btn" style="flex: 1; min-width: 100px;">${t('&larr; BACK')}</button>
+        <button type="submit" class="brutal-btn brutal-btn-black" style="flex: 2; min-width: 140px;">${t('ENTER PLATFORM 🚀')}</button>
       </div>
     </form>
   `;
@@ -636,7 +736,7 @@ function renderCreatorStudioMetricsAndPostTool(creator) {
     <div style="margin-bottom: 2rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
         <div>
-          <span class="brutal-badge brutal-badge-black">CREATOR DASHBOARD</span>
+          <span class="brutal-badge brutal-badge-black">${t('CREATOR DASHBOARD')}</span>
           <h1 style="font-size: 2rem; margin-top: 0.2rem;">${creator.displayName}</h1>
           <p style="font-size: 0.9rem; color: #555;">Manage metrics, publish exclusive posts, and customize your RGB theme.</p>
         </div>
@@ -648,19 +748,19 @@ function renderCreatorStudioMetricsAndPostTool(creator) {
       <!-- Metrics Cards Grid -->
       <div class="grid-3" style="margin-bottom: 2rem;">
         <div class="brutal-card" style="border-width: 3px; background: #ffffff;">
-          <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #666;">ACTIVE SUBSCRIBERS</span>
+          <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #666;">${t('ACTIVE SUBSCRIBERS')}</span>
           <div style="font-size: 2.2rem; font-weight: 900; margin-top: 0.2rem;">${creator.subscribersCount}</div>
           <span class="brutal-badge brutal-badge-accent" style="margin-top: 0.5rem;">DB SYNCED</span>
         </div>
 
         <div class="brutal-card" style="border-width: 3px; background: #ffffff;">
-          <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #666;">ESTIMATED MONTHLY REVENUE</span>
+          <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #666;">${t('ESTIMATED MONTHLY REVENUE')}</span>
           <div style="font-size: 2.2rem; font-weight: 900; margin-top: 0.2rem;">$${creator.monthlyRevenue}</div>
           <span class="brutal-badge brutal-badge-creator" style="margin-top: 0.5rem;">${creator.tiers.length} TIERS ACTIVE</span>
         </div>
 
         <div class="brutal-card" style="border-width: 3px; background: #ffffff;">
-          <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #666;">PUBLISHED POSTS</span>
+          <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #666;">${t('PUBLISHED POSTS')}</span>
           <div style="font-size: 2.2rem; font-weight: 900; margin-top: 0.2rem;">${posts.length}</div>
           <span class="brutal-badge brutal-badge-black" style="margin-top: 0.5rem;">${posts.filter((p) => p.isExclusive).length} EXCLUSIVE DROPS</span>
         </div>
@@ -668,14 +768,14 @@ function renderCreatorStudioMetricsAndPostTool(creator) {
 
       <!-- Tabs -->
       <div class="brutal-tabs">
-        <button class="brutal-tab active" id="tab-btn-posts">POST MANAGEMENT</button>
-        <button class="brutal-tab" id="tab-btn-theme">RGB THEME CUSTOMIZER</button>
+        <button class="brutal-tab active" id="tab-btn-posts">${t('POST MANAGEMENT')}</button>
+        <button class="brutal-tab" id="tab-btn-theme">${t('RGB THEME CUSTOMIZER')}</button>
       </div>
 
       <div id="studio-main-area">
         <div class="grid-main-side">
           <div>
-            <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">PUBLISHED CONTENT FEED</h3>
+            <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">${t('PUBLISHED CONTENT FEED')}</h3>
             ${
               posts.length === 0
                 ? '<p>No posts published yet.</p>'
@@ -703,7 +803,7 @@ function renderCreatorStudioMetricsAndPostTool(creator) {
           <!-- New Post Creator Form -->
           <div>
             <div class="brutal-card" style="border-width: 3px; background: #fafafa;">
-              <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">✏️ CREATE NEW POST</h3>
+              <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">✏️ ${t('CREATE NEW POST')}</h3>
 
               <form id="studio-create-post-form" style="display: flex; flex-direction: column; gap: 0.8rem;">
                 <div>
@@ -730,7 +830,7 @@ function renderCreatorStudioMetricsAndPostTool(creator) {
                 </div>
 
                 <button type="submit" class="brutal-btn brutal-btn-black" style="margin-top: 0.4rem;">
-                  PUBLISH DROP NOW 🚀
+                  ${t('PUBLISH DROP NOW 🚀')}
                 </button>
               </form>
             </div>
@@ -749,11 +849,11 @@ function renderRGBThemeStudioControls(creator) {
     <div class="brutal-card" style="border-width: 3px; background: #ffffff; margin-top: 0.5rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
         <div>
-          <span class="brutal-badge brutal-badge-black">RGB COLOR ENGINE</span>
-          <h2 style="font-size: 1.4rem; margin-top: 0.2rem;">LIVE RGB THEME CUSTOMIZER</h2>
+          <span class="brutal-badge brutal-badge-black">${t('RGB COLOR ENGINE')}</span>
+          <h2 style="font-size: 1.4rem; margin-top: 0.2rem;">${t('LIVE RGB THEME CUSTOMIZER')}</h2>
         </div>
         <button id="btn-save-rgb-theme" class="brutal-btn brutal-btn-creator">
-          💾 SAVE CHANGES
+          💾 ${t('SAVE CHANGES')}
         </button>
       </div>
 
@@ -764,7 +864,7 @@ function renderRGBThemeStudioControls(creator) {
       <div class="grid-2" style="margin-bottom: 1.2rem;">
         <!-- Primary RGB Controls -->
         <div style="border: 3px solid #000; padding: 0.8rem; background: #fafafa; box-shadow: 3px 3px 0px #000;">
-          <h3 style="font-size: 1rem; margin-bottom: 0.6rem;">PRIMARY RGB COLOR</h3>
+          <h3 style="font-size: 1rem; margin-bottom: 0.6rem;">${t('PRIMARY RGB COLOR')}</h3>
 
           <div class="rgb-slider-group">
             <div class="rgb-slider-header"><span>RED</span><span id="studio-txt-pr">${theme.primaryColor.r}</span></div>
@@ -788,7 +888,7 @@ function renderRGBThemeStudioControls(creator) {
 
         <!-- Accent RGB Controls -->
         <div style="border: 3px solid #000; padding: 0.8rem; background: #fafafa; box-shadow: 3px 3px 0px #000;">
-          <h3 style="font-size: 1rem; margin-bottom: 0.6rem;">ACCENT RGB COLOR</h3>
+          <h3 style="font-size: 1rem; margin-bottom: 0.6rem;">${t('ACCENT RGB COLOR')}</h3>
 
           <div class="rgb-slider-group">
             <div class="rgb-slider-header"><span>RED</span><span id="studio-txt-ar">${theme.accentColor.r}</span></div>
@@ -817,13 +917,13 @@ function renderRGBThemeStudioControls(creator) {
 
         <div class="grid-2">
           <div>
-            <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">PROFILE AVATAR</label>
+            <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('PROFILE AVATAR')}</label>
             <input type="text" id="studio-avatar-url" class="brutal-input" value="${creator.avatarUrl}" style="display: none;">
             <input type="file" id="studio-avatar-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
           </div>
 
           <div>
-            <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">BANNER COVER</label>
+            <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('BANNER COVER')}</label>
             <input type="text" id="studio-banner-url" class="brutal-input" value="${creator.bannerUrl}" style="display: none;">
             <input type="file" id="studio-banner-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
           </div>
@@ -959,17 +1059,17 @@ function renderCreatorPublicProfilePage(creator) {
             ${creator.displayName}
             <span class="brutal-badge brutal-badge-accent">VERIFIED CREATOR</span>
           </h1>
-          <p style="font-weight: 700; font-size: 0.9rem; color: #444;">@${creator.handle} • ${creator.category}</p>
+          <p style="font-weight: 700; font-size: 0.9rem; color: #444;">@${creator.handle} • ${t(creator.category)}</p>
         </div>
         <div>
           ${
             isSubscribed
               ? `
-            <button class="brutal-btn brutal-btn-black" disabled style="opacity: 0.9;">✓ SUBSCRIBED</button>
+            <button class="brutal-btn brutal-btn-black" disabled style="opacity: 0.9;">${t('SUBSCRIBED')}</button>
           `
               : `
             <button class="brutal-btn brutal-btn-creator" id="btn-subscribe-header">
-              ⚡ SUBSCRIBE ($${creator.tiers[0]?.price || 5}/MO)
+              ${t('SUBSCRIBE')} ($${creator.tiers[0]?.price || 5}/${t('MONTH')})
             </button>
           `
           }
@@ -979,9 +1079,9 @@ function renderCreatorPublicProfilePage(creator) {
       <div class="brutal-card creator-theme-soft-bg" style="margin-bottom: 1.5rem; border-width: 3px;">
         <p style="font-size: 1rem; font-weight: 600; margin-bottom: 0.8rem;">${creator.bio}</p>
         <div style="display: flex; gap: 1.5rem; font-weight: 800; font-size: 0.85rem; flex-wrap: wrap;">
-          <div><span style="font-size: 1.1rem;">${creator.subscribersCount}</span> SUBSCRIBERS</div>
-          <div><span style="font-size: 1.1rem;">${posts.length}</span> POSTS DROPPED</div>
-          <div><span style="font-size: 1.1rem;">${creator.tiers.length}</span> MEMBERSHIP TIERS</div>
+          <div><span style="font-size: 1.1rem;">${creator.subscribersCount}</span> ${t('SUBSCRIBERS')}</div>
+          <div><span style="font-size: 1.1rem;">${posts.length}</span> ${t('POSTS DROPPED')}</div>
+          <div><span style="font-size: 1.1rem;">${creator.tiers.length}</span> ${t('MEMBERSHIP TIERS')}</div>
         </div>
       </div>
 
@@ -1026,7 +1126,7 @@ function renderCreatorPublicProfilePage(creator) {
 
                 <div style="display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #000; padding-top: 0.6rem;">
                   <button class="brutal-btn brutal-btn-sm btn-like-post" data-id="${p.id}">
-                    ❤️ LIKE (${p.likesCount})
+                    ❤️ ${t('LIKE')} (${p.likesCount})
                   </button>
                   <span style="font-weight: 700; font-size: 0.8rem;">💬 ACTIVE DROP</span>
                 </div>
@@ -1038,7 +1138,7 @@ function renderCreatorPublicProfilePage(creator) {
 
         <div>
           <h3 style="font-size: 1.3rem; margin-bottom: 1rem; border-bottom: 3px solid #000; padding-bottom: 0.3rem;">
-            ⚡ MEMBERSHIP TIERS
+            ⚡ ${t('MEMBERSHIP TIERS')}
           </h3>
 
           ${creator.tiers
@@ -1048,7 +1148,7 @@ function renderCreatorPublicProfilePage(creator) {
               <span class="brutal-badge brutal-badge-creator" style="margin-bottom: 0.4rem;">SUBSCRIPTION TIER</span>
               <h4 style="font-size: 1.2rem; margin-top: 0.2rem;">${t.name}</h4>
               <div style="font-size: 1.8rem; font-weight: 900; margin: 0.4rem 0;">
-                $${t.price} <span style="font-size: 0.85rem; font-weight: 700;">/ MONTH</span>
+                $${t.price} <span style="font-size: 0.85rem; font-weight: 700;">/ ${t('MONTH')}</span>
               </div>
               <p style="font-size: 0.8rem; margin-bottom: 0.8rem; color: #333;">${t.description}</p>
 
@@ -1084,14 +1184,14 @@ function showTierPurchaseModal(creatorId, tierId, tierPrice) {
   const html = `
     <div style="text-align: center; margin-bottom: 1.2rem;">
       <span class="brutal-badge brutal-badge-black">SUBSCRIBE TO CREATOR</span>
-      <h2 style="font-size: 1.4rem; margin-top: 0.4rem;">CONFIRM SUBSCRIPTION</h2>
+      <h2 style="font-size: 1.4rem; margin-top: 0.4rem;">${t('CONFIRM SUBSCRIPTION')}</h2>
       <p style="font-size: 0.85rem;">Supporting <strong>${creator ? creator.displayName : 'Creator'}</strong></p>
     </div>
 
     <div class="brutal-card" style="border-width: 3px; background: #fdfdfd; margin-bottom: 1.2rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
         <div>
-          <strong style="display: block; font-size: 1rem;">MONTHLY SUBSCRIPTION</strong>
+          <strong style="display: block; font-size: 1rem;">${t('MONTHLY SUBSCRIPTION')}</strong>
           <span style="font-size: 0.8rem; color: #555;">Instant access to exclusive drops</span>
         </div>
         <div style="font-size: 1.5rem; font-weight: 900;">$${tierPrice} / mo</div>
@@ -1100,17 +1200,17 @@ function showTierPurchaseModal(creatorId, tierId, tierPrice) {
 
     <form id="tier-checkout-form" style="display: flex; flex-direction: column; gap: 0.8rem;">
       <div>
-        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">CARDHOLDER NAME</label>
+        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('CARDHOLDER NAME')}</label>
         <input type="text" class="brutal-input" value="${store.user.name || 'JOHN DOE'}" required>
       </div>
 
       <div>
-        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">CARD NUMBER (SIMULATED)</label>
+        <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">${t('CARD NUMBER (SIMULATED)')}</label>
         <input type="text" class="brutal-input" value="4242 •••• •••• 4242" required>
       </div>
 
       <button type="submit" class="brutal-btn brutal-btn-black brutal-btn-lg" style="margin-top: 0.4rem; width: 100%;">
-        CONFIRM & PAY $${tierPrice} 💳
+        ${t('CONFIRM & PAY')} $${tierPrice} 💳
       </button>
     </form>
   `;
@@ -1145,20 +1245,20 @@ function renderExploreCreatorsPage() {
       <div class="brutal-card" style="border-width: 4px; background: #ffffff; padding: 2rem 1.2rem; margin-bottom: 1.5rem; position: relative; overflow: hidden;">
         <div style="max-width: 800px; margin: 0 auto; text-align: center;">
           <div style="display: inline-block; margin-bottom: 0.6rem;">
-            <span class="brutal-badge brutal-badge-black" style="font-size: 0.8rem;">MONOCHROME & RGB CUSTOM CREATOR PLATFORM</span>
+            <span class="brutal-badge brutal-badge-black" style="font-size: 0.8rem;">${t('MONOCHROME & RGB CUSTOM CREATOR PLATFORM')}</span>
           </div>
           <h1 style="font-size: 2.6rem; line-height: 1.05; margin-bottom: 0.8rem;">
-            BUILD YOUR FANBASE IN <span style="background: #000; color: #fff; padding: 0.1rem 0.4rem;">STARK NEUBRUTALISM</span>
+            ${t('BUILD YOUR FANBASE IN')} <span style="background: #000; color: #fff; padding: 0.1rem 0.4rem;">${t('STARK NEUBRUTALISM')}</span>
           </h1>
           <p style="font-size: 1rem; font-weight: 600; color: #333; margin-bottom: 1.5rem;">
-            The ultra-simple platform where creators customize their RGB homepages, publish exclusive drops, and monetize directly through subscriber tiers.
+            ${t('The ultra-simple platform where creators customize their RGB homepages, publish exclusive drops, and monetize directly through subscriber tiers.')}
           </p>
           <div style="display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap;">
             <button class="brutal-btn brutal-btn-black brutal-btn-lg" id="hero-btn-start-creator">
-              START CREATING NOW 🎨
+              ${t('START CREATING NOW 🎨')}
             </button>
             <button class="brutal-btn brutal-btn-lg" id="hero-btn-explore-feed">
-              EXPLORE DROPS ⚡
+              ${t('EXPLORE DROPS ⚡')}
             </button>
           </div>
         </div>
@@ -1168,19 +1268,19 @@ function renderExploreCreatorsPage() {
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-bottom: 2rem;">
         <div class="brutal-card" style="text-align: center; border-width: 3px; padding: 0.8rem;">
           <div style="font-size: 1.5rem; font-weight: 900;">POSTGRESQL</div>
-          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">DATABASE BACKED</div>
+          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">${t('DATABASE BACKED')}</div>
         </div>
         <div class="brutal-card" style="text-align: center; border-width: 3px; padding: 0.8rem;">
           <div style="font-size: 1.5rem; font-weight: 900;">100% SYNCED</div>
-          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">REALTIME REST API</div>
+          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">${t('REALTIME REST API')}</div>
         </div>
         <div class="brutal-card" style="text-align: center; border-width: 3px; padding: 0.8rem;">
           <div style="font-size: 1.5rem; font-weight: 900;">100% RGB</div>
-          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">CUSTOM THEMED PAGES</div>
+          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">${t('CUSTOM THEMED PAGES')}</div>
         </div>
         <div class="brutal-card" style="text-align: center; border-width: 3px; padding: 0.8rem;">
           <div style="font-size: 1.5rem; font-weight: 900;">0% BLOAT</div>
-          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">PURE BRUTALIST UI</div>
+          <div style="font-size: 0.75rem; font-weight: 800; color: #555;">${t('PURE BRUTALIST UI')}</div>
         </div>
       </div>
 
@@ -1192,7 +1292,7 @@ function renderExploreCreatorsPage() {
               .map(
                 (cat) => `
               <button class="brutal-btn brutal-btn-sm category-filter-btn ${store.filterCategory === cat ? 'brutal-btn-black' : ''}" data-category="${cat}">
-                ${cat}
+                ${t(cat)}
               </button>
             `
               )
@@ -1200,21 +1300,21 @@ function renderExploreCreatorsPage() {
           </div>
 
           <div style="flex: 1; min-width: 220px; max-width: 100%;">
-            <input type="text" id="homepage-search-input" class="brutal-input" placeholder="🔍 Search creators or topics..." value="${store.searchQuery}">
+            <input type="text" id="homepage-search-input" class="brutal-input" placeholder="🔍 ${t('SEARCH_PLACEHOLDER')}" value="${store.searchQuery}">
           </div>
         </div>
       </div>
 
       <!-- Creators Grid -->
       <h2 style="font-size: 1.4rem; margin-bottom: 1rem; border-bottom: 3px solid #000; padding-bottom: 0.3rem;">
-        FEATURED CREATOR HOMEPAGES
+        ${t('FEATURED CREATOR HOMEPAGES')}
       </h2>
 
       ${
         filteredCreators.length === 0
           ? `
         <div class="brutal-card" style="text-align: center; padding: 1.5rem;">
-          <h3>NO CREATORS MATCH YOUR SEARCH</h3>
+          <h3>${t('NO CREATORS MATCH YOUR SEARCH')}</h3>
           <p>Try searching for a different handle or selecting "ALL" categories.</p>
         </div>
       `
@@ -1239,8 +1339,8 @@ function renderExploreCreatorsPage() {
                 <p style="font-size: 0.88rem; margin: 0.6rem 0 1rem 0; line-height: 1.35;">${c.bio}</p>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #000; padding-top: 0.6rem;">
-                  <span style="font-weight: 800; font-size: 0.8rem;">⚡ ${c.subscribersCount} SUBSCRIBERS</span>
-                  <span class="brutal-btn brutal-btn-sm brutal-btn-black">VISIT HOMEPAGE &rarr;</span>
+                  <span style="font-weight: 800; font-size: 0.8rem;">⚡ ${c.subscribersCount} ${t('SUBSCRIBERS')}</span>
+                  <span class="brutal-btn brutal-btn-sm brutal-btn-black">${t('VISIT HOMEPAGE ↗')}</span>
                 </div>
               </div>
             </div>
@@ -1274,7 +1374,7 @@ function renderSubscriberFeedPage() {
         <div class="brutal-card" style="text-align: center; padding: 2rem 1rem;">
           <h2 style="font-size: 1.3rem; margin-bottom: 0.4rem;">NO SUBSCRIBED CREATORS YET</h2>
           <p style="margin-bottom: 1.2rem;">Discover and subscribe to creators to see their exclusive drops here.</p>
-          <button class="brutal-btn brutal-btn-black" id="btn-goto-explore">EXPLORE CREATORS NOW &rarr;</button>
+          <button class="brutal-btn brutal-btn-black" id="btn-goto-explore">${t('EXPLORE CREATORS NOW &rarr;')}</button>
         </div>
       `
           : subscribedPosts
@@ -1300,10 +1400,10 @@ function renderSubscriberFeedPage() {
 
             <div style="display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #000; padding-top: 0.6rem; flex-wrap: wrap; gap: 0.5rem;">
               <button class="brutal-btn brutal-btn-sm btn-like-post" data-id="${p.id}">
-                ❤️ LIKE (${p.likesCount})
+                ❤️ ${t('LIKE')} (${p.likesCount})
               </button>
               <button class="brutal-btn brutal-btn-sm btn-open-creator-profile" data-id="${creator ? creator.id : p.creatorId}">
-                VISIT HOMEPAGE ↗
+                ${t('VISIT HOMEPAGE ↗')}
               </button>
             </div>
           </div>
@@ -1321,14 +1421,14 @@ function renderNavbarControls() {
 
   let html = `
     <button id="nav-btn-explore" class="brutal-btn brutal-btn-sm ${store.activeView === 'explore' ? 'brutal-btn-black' : ''}">
-      🔍 EXPLORE
+      🔍 ${t('EXPLORE')}
     </button>
   `;
 
   if (store.user.role === 'subscriber' || store.user.role === 'creator') {
     html += `
       <button id="nav-btn-feed" class="brutal-btn brutal-btn-sm ${store.activeView === 'feed' ? 'brutal-btn-black' : ''}">
-        ⚡ MY FEED
+        ⚡ ${t('MY FEED')}
       </button>
     `;
   }
@@ -1336,26 +1436,36 @@ function renderNavbarControls() {
   if (store.user.role === 'creator') {
     html += `
       <button id="nav-btn-studio" class="brutal-btn brutal-btn-sm brutal-btn-creator ${store.activeView === 'creator-studio' ? 'brutal-btn-black' : ''}">
-        🎨 CREATOR STUDIO
+        🎨 ${t('CREATOR STUDIO')}
       </button>
     `;
   }
 
   html += `
-    <div class="nav-role-group" style="display: flex; align-items: center; gap: 0.4rem; border-left: 3px solid #000; padding-left: 0.6rem; margin-left: 0.4rem; flex-wrap: wrap;">
+    <div class="nav-role-group" style="display: flex; align-items: center; gap: 0.4rem; border-inline-start: 3px solid #000; padding-inline-start: 0.6rem; margin-inline-start: 0.4rem; flex-wrap: wrap;">
+      <select id="lang-switcher-select" class="brutal-select" style="padding: 0.3rem 0.5rem; font-size: 0.8rem; min-width: 80px; font-weight: bold;">
+        <option value="en" ${store.language === 'en' ? 'selected' : ''}>🇺🇸 EN</option>
+        <option value="fa" ${store.language === 'fa' ? 'selected' : ''}>🇮🇷 FA</option>
+      </select>
+
       <select id="role-switcher-select" class="brutal-select" style="padding: 0.3rem 0.5rem; font-size: 0.8rem; min-width: 140px;">
-        <option value="guest" ${store.user.role === 'guest' ? 'selected' : ''}>👤 GUEST MODE</option>
-        <option value="subscriber" ${store.user.role === 'subscriber' ? 'selected' : ''}>⚡ SUBSCRIBER MODE</option>
-        <option value="creator" ${store.user.role === 'creator' ? 'selected' : ''}>🎨 CREATOR MODE</option>
+        <option value="guest" ${store.user.role === 'guest' ? 'selected' : ''}>👤 ${t('GUEST MODE')}</option>
+        <option value="subscriber" ${store.user.role === 'subscriber' ? 'selected' : ''}>⚡ ${t('SUBSCRIBER MODE')}</option>
+        <option value="creator" ${store.user.role === 'creator' ? 'selected' : ''}>🎨 ${t('CREATOR MODE')}</option>
       </select>
 
       <button id="nav-btn-signup" class="brutal-btn brutal-btn-sm brutal-btn-accent">
-        ✨ SIGN UP FUNNEL
+        ✨ ${t('SIGN UP FUNNEL')}
       </button>
     </div>
   `;
 
   container.innerHTML = html;
+
+  document.getElementById('lang-switcher-select')?.addEventListener('change', (e) => {
+    store.setLanguage(e.target.value);
+    renderNavbarControls();
+  });
 
   document.getElementById('nav-btn-explore')?.addEventListener('click', () => {
     store.activeView = 'explore';
@@ -1410,7 +1520,7 @@ function renderApp() {
   const main = document.getElementById('main-content');
 
   if (store.isLoading) {
-    main.innerHTML = `<div class="brutal-card" style="text-align: center; padding: 2rem;"><h2>LOADING PLATFORM DATA FROM POSTGRESQL...</h2></div>`;
+    main.innerHTML = `<div class="brutal-card" style="text-align: center; padding: 2rem;"><h2>${t('LOADING PLATFORM DATA FROM POSTGRESQL...')}</h2></div>`;
     return;
   }
 
@@ -1466,8 +1576,8 @@ function renderApp() {
                 <p style="font-size: 0.88rem; margin: 0.6rem 0 1rem 0; line-height: 1.35;">${c.bio}</p>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #000; padding-top: 0.6rem;">
-                  <span style="font-weight: 800; font-size: 0.8rem;">⚡ ${c.subscribersCount} SUBSCRIBERS</span>
-                  <span class="brutal-btn brutal-btn-sm brutal-btn-black">VISIT HOMEPAGE &rarr;</span>
+                  <span style="font-weight: 800; font-size: 0.8rem;">⚡ ${c.subscribersCount} ${t('SUBSCRIBERS')}</span>
+                  <span class="brutal-btn brutal-btn-sm brutal-btn-black">${t('VISIT HOMEPAGE ↗')}</span>
                 </div>
               </div>
             </div>
