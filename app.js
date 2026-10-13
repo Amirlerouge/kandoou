@@ -345,7 +345,7 @@ document.getElementById('modal-close-btn').addEventListener('click', closeModal)
 function showRoleSelectionModal() {
   const html = `
     <div style="text-align: center; margin-bottom: 1.2rem;">
-      <span class="brutal-badge brutal-badge-black" style="font-size: 0.85rem;">JOIN Kandou</span>
+      <span class="brutal-badge brutal-badge-black" style="font-size: 0.85rem;">JOIN BRUTAL.FAN</span>
       <h2 style="font-size: 1.5rem; margin-top: 0.4rem;">${t('SELECT ACCOUNT TYPE')}</h2>
       <p style="font-size: 0.85rem; margin-top: 0.2rem;">Choose how you want to interact with the platform.</p>
     </div>
