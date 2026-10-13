@@ -400,13 +400,13 @@ function showCreatorOnboardingModal() {
 
       <div class="grid-2">
         <div>
-          <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">PROFILE AVATAR URL</label>
-          <input type="text" id="creator-avatar-url" class="brutal-input" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80">
+          <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">PROFILE AVATAR</label>
+          <input type="text" id="creator-avatar-url" class="brutal-input" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80" style="display: none;">
           <input type="file" id="creator-avatar-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
         </div>
         <div>
-          <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">BANNER COVER URL</label>
-          <input type="text" id="creator-banner-url" class="brutal-input" value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80">
+          <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">BANNER COVER</label>
+          <input type="text" id="creator-banner-url" class="brutal-input" value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80" style="display: none;">
           <input type="file" id="creator-banner-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
         </div>
       </div>
@@ -817,14 +817,14 @@ function renderRGBThemeStudioControls(creator) {
 
         <div class="grid-2">
           <div>
-            <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">PROFILE AVATAR IMAGE URL</label>
-            <input type="text" id="studio-avatar-url" class="brutal-input" value="${creator.avatarUrl}">
+            <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">PROFILE AVATAR</label>
+            <input type="text" id="studio-avatar-url" class="brutal-input" value="${creator.avatarUrl}" style="display: none;">
             <input type="file" id="studio-avatar-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
           </div>
 
           <div>
-            <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">BANNER COVER IMAGE URL</label>
-            <input type="text" id="studio-banner-url" class="brutal-input" value="${creator.bannerUrl}">
+            <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">BANNER COVER</label>
+            <input type="text" id="studio-banner-url" class="brutal-input" value="${creator.bannerUrl}" style="display: none;">
             <input type="file" id="studio-banner-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
           </div>
         </div>
