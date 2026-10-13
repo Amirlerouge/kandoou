@@ -18,8 +18,8 @@ INSERT INTO users (id, email, password_hash, full_name, username, role, is_verif
 ('00000000-0000-0000-0000-000000000005', 'jane.smith@example.com', '$2b$12$e8vE9x1...', 'Jane Smith', 'janesmith', 'patron', FALSE);
 
 -- 3. CAMPAIGNS
-INSERT INTO campaigns (id, creator_id, category_id, title, slug, summary, about, creation_name, currency, is_published, published_at) VALUES
-('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000002', 1, 'Tech Overload Podcast', 'tech-overload', 'Weekly deep dives into modern tech & AI', 'Welcome to Tech Overload!', 'is creating podcasts', 'USD', TRUE, CURRENT_TIMESTAMP - INTERVAL '30 days');
+INSERT INTO campaigns (id, creator_id, category_id, title, slug, summary, about, creation_name, currency, is_published, published_at, theme) VALUES
+('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000002', 1, 'Tech Overload Podcast', 'tech-overload', 'Weekly deep dives into modern tech & AI', 'Welcome to Tech Overload!', 'is creating podcasts', 'USD', TRUE, CURRENT_TIMESTAMP - INTERVAL '30 days', '{"primaryColor": {"r": 255, "g": 87, "b": 34}, "accentColor": {"r": 255, "g": 235, "b": 59}}');
 
 -- 4. GOALS
 INSERT INTO goals (id, campaign_id, title, description, target_amount_cents, reach_by_patrons_count, is_reached) VALUES

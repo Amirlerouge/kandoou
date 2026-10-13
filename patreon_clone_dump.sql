@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict fPIcG7VwwghYSoTm6D0E3zDq0dnfyTVWAd2Gi3YSjxnhvae1f3aBMDiNNwRbsjo
+\restrict nS7kwDufPyeqLQY8ouTI227uhbSaa19KZsG6YBbg7iR4D8VGzNeyUSrjORRjeWa
 
 -- Dumped from database version 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
@@ -18,166 +18,6 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-DROP POLICY IF EXISTS subscriptions_participant_policy ON public.subscriptions;
-DROP POLICY IF EXISTS payouts_creator_policy ON public.payouts;
-DROP POLICY IF EXISTS payments_participant_policy ON public.payments;
-DROP POLICY IF EXISTS notifications_owner_policy ON public.notifications;
-DROP POLICY IF EXISTS messages_participant_policy ON public.messages;
-ALTER TABLE IF EXISTS ONLY public.tiers DROP CONSTRAINT IF EXISTS tiers_campaign_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.tier_benefits DROP CONSTRAINT IF EXISTS tier_benefits_tier_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.tier_benefits DROP CONSTRAINT IF EXISTS tier_benefits_benefit_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.subscriptions DROP CONSTRAINT IF EXISTS subscriptions_tier_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.subscriptions DROP CONSTRAINT IF EXISTS subscriptions_patron_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.subscriptions DROP CONSTRAINT IF EXISTS subscriptions_campaign_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.posts DROP CONSTRAINT IF EXISTS posts_campaign_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.posts DROP CONSTRAINT IF EXISTS posts_author_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.post_tier_access DROP CONSTRAINT IF EXISTS post_tier_access_tier_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.post_tier_access DROP CONSTRAINT IF EXISTS post_tier_access_post_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.post_tags DROP CONSTRAINT IF EXISTS post_tags_tag_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.post_tags DROP CONSTRAINT IF EXISTS post_tags_post_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.polls DROP CONSTRAINT IF EXISTS polls_post_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.poll_votes DROP CONSTRAINT IF EXISTS poll_votes_user_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.poll_votes DROP CONSTRAINT IF EXISTS poll_votes_poll_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.poll_votes DROP CONSTRAINT IF EXISTS poll_votes_option_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.poll_options DROP CONSTRAINT IF EXISTS poll_options_poll_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payouts DROP CONSTRAINT IF EXISTS payouts_creator_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payouts DROP CONSTRAINT IF EXISTS payouts_campaign_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payments DROP CONSTRAINT IF EXISTS payments_subscription_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payments DROP CONSTRAINT IF EXISTS payments_patron_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.payments DROP CONSTRAINT IF EXISTS payments_campaign_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.notifications DROP CONSTRAINT IF EXISTS notifications_user_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.messages DROP CONSTRAINT IF EXISTS messages_sender_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.messages DROP CONSTRAINT IF EXISTS messages_conversation_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.media_attachments DROP CONSTRAINT IF EXISTS media_attachments_post_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.likes DROP CONSTRAINT IF EXISTS likes_user_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.likes DROP CONSTRAINT IF EXISTS likes_post_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.likes DROP CONSTRAINT IF EXISTS likes_comment_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.goals DROP CONSTRAINT IF EXISTS goals_campaign_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.conversations DROP CONSTRAINT IF EXISTS conversations_patron_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.conversations DROP CONSTRAINT IF EXISTS conversations_creator_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.comments DROP CONSTRAINT IF EXISTS comments_user_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.comments DROP CONSTRAINT IF EXISTS comments_post_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.comments DROP CONSTRAINT IF EXISTS comments_parent_comment_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.campaigns DROP CONSTRAINT IF EXISTS campaigns_creator_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.campaigns DROP CONSTRAINT IF EXISTS campaigns_category_id_fkey;
-ALTER TABLE IF EXISTS ONLY public.benefits DROP CONSTRAINT IF EXISTS benefits_campaign_id_fkey;
-DROP TRIGGER IF EXISTS update_users_updated_at ON public.users;
-DROP TRIGGER IF EXISTS update_tiers_updated_at ON public.tiers;
-DROP TRIGGER IF EXISTS update_subscriptions_updated_at ON public.subscriptions;
-DROP TRIGGER IF EXISTS update_posts_updated_at ON public.posts;
-DROP TRIGGER IF EXISTS update_payouts_updated_at ON public.payouts;
-DROP TRIGGER IF EXISTS update_payments_updated_at ON public.payments;
-DROP TRIGGER IF EXISTS update_comments_updated_at ON public.comments;
-DROP TRIGGER IF EXISTS update_campaigns_updated_at ON public.campaigns;
-DROP TRIGGER IF EXISTS trigger_update_tier_patron_count ON public.subscriptions;
-DROP TRIGGER IF EXISTS trigger_update_poll_option_vote_count ON public.poll_votes;
-DROP TRIGGER IF EXISTS audit_users_trigger ON public.users;
-DROP TRIGGER IF EXISTS audit_payouts_trigger ON public.payouts;
-DROP TRIGGER IF EXISTS audit_payments_trigger ON public.payments;
-DROP INDEX IF EXISTS public.unique_user_post_like;
-DROP INDEX IF EXISTS public.unique_user_comment_like;
-DROP INDEX IF EXISTS public.idx_tiers_campaign;
-DROP INDEX IF EXISTS public.idx_subscriptions_tier;
-DROP INDEX IF EXISTS public.idx_subscriptions_status;
-DROP INDEX IF EXISTS public.idx_subscriptions_patron;
-DROP INDEX IF EXISTS public.idx_subscriptions_campaign;
-DROP INDEX IF EXISTS public.idx_posts_title_trgm;
-DROP INDEX IF EXISTS public.idx_posts_campaign_published;
-DROP INDEX IF EXISTS public.idx_posts_author;
-DROP INDEX IF EXISTS public.idx_posts_access;
-DROP INDEX IF EXISTS public.idx_payments_subscription;
-DROP INDEX IF EXISTS public.idx_payments_patron;
-DROP INDEX IF EXISTS public.idx_payments_campaign;
-DROP INDEX IF EXISTS public.idx_notifications_user_unread;
-DROP INDEX IF EXISTS public.idx_messages_conversation;
-DROP INDEX IF EXISTS public.idx_likes_post;
-DROP INDEX IF EXISTS public.idx_likes_comment;
-DROP INDEX IF EXISTS public.idx_comments_post;
-DROP INDEX IF EXISTS public.idx_comments_parent;
-DROP INDEX IF EXISTS public.idx_campaigns_title_trgm;
-DROP INDEX IF EXISTS public.idx_campaigns_creator;
-DROP INDEX IF EXISTS public.idx_campaigns_category;
-DROP INDEX IF EXISTS public.idx_audit_logs_table_record;
-ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_username_key;
-ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_pkey;
-ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_email_key;
-ALTER TABLE IF EXISTS ONLY public.poll_votes DROP CONSTRAINT IF EXISTS unique_user_poll_vote;
-ALTER TABLE IF EXISTS ONLY public.conversations DROP CONSTRAINT IF EXISTS unique_patron_creator_conversation;
-ALTER TABLE IF EXISTS ONLY public.subscriptions DROP CONSTRAINT IF EXISTS unique_patron_campaign_sub;
-ALTER TABLE IF EXISTS ONLY public.campaigns DROP CONSTRAINT IF EXISTS unique_creator_campaign;
-ALTER TABLE IF EXISTS ONLY public.tiers DROP CONSTRAINT IF EXISTS tiers_pkey;
-ALTER TABLE IF EXISTS ONLY public.tier_benefits DROP CONSTRAINT IF EXISTS tier_benefits_pkey;
-ALTER TABLE IF EXISTS ONLY public.tags DROP CONSTRAINT IF EXISTS tags_pkey;
-ALTER TABLE IF EXISTS ONLY public.tags DROP CONSTRAINT IF EXISTS tags_name_key;
-ALTER TABLE IF EXISTS ONLY public.subscriptions DROP CONSTRAINT IF EXISTS subscriptions_pkey;
-ALTER TABLE IF EXISTS ONLY public.posts DROP CONSTRAINT IF EXISTS posts_pkey;
-ALTER TABLE IF EXISTS ONLY public.post_tier_access DROP CONSTRAINT IF EXISTS post_tier_access_pkey;
-ALTER TABLE IF EXISTS ONLY public.post_tags DROP CONSTRAINT IF EXISTS post_tags_pkey;
-ALTER TABLE IF EXISTS ONLY public.polls DROP CONSTRAINT IF EXISTS polls_post_id_key;
-ALTER TABLE IF EXISTS ONLY public.polls DROP CONSTRAINT IF EXISTS polls_pkey;
-ALTER TABLE IF EXISTS ONLY public.poll_votes DROP CONSTRAINT IF EXISTS poll_votes_pkey;
-ALTER TABLE IF EXISTS ONLY public.poll_options DROP CONSTRAINT IF EXISTS poll_options_pkey;
-ALTER TABLE IF EXISTS ONLY public.payouts DROP CONSTRAINT IF EXISTS payouts_pkey;
-ALTER TABLE IF EXISTS ONLY public.payments DROP CONSTRAINT IF EXISTS payments_transaction_reference_key;
-ALTER TABLE IF EXISTS ONLY public.payments DROP CONSTRAINT IF EXISTS payments_pkey;
-ALTER TABLE IF EXISTS ONLY public.notifications DROP CONSTRAINT IF EXISTS notifications_pkey;
-ALTER TABLE IF EXISTS ONLY public.messages DROP CONSTRAINT IF EXISTS messages_pkey;
-ALTER TABLE IF EXISTS ONLY public.media_attachments DROP CONSTRAINT IF EXISTS media_attachments_pkey;
-ALTER TABLE IF EXISTS ONLY public.likes DROP CONSTRAINT IF EXISTS likes_pkey;
-ALTER TABLE IF EXISTS ONLY public.goals DROP CONSTRAINT IF EXISTS goals_pkey;
-ALTER TABLE IF EXISTS ONLY public.conversations DROP CONSTRAINT IF EXISTS conversations_pkey;
-ALTER TABLE IF EXISTS ONLY public.comments DROP CONSTRAINT IF EXISTS comments_pkey;
-ALTER TABLE IF EXISTS ONLY public.categories DROP CONSTRAINT IF EXISTS categories_slug_key;
-ALTER TABLE IF EXISTS ONLY public.categories DROP CONSTRAINT IF EXISTS categories_pkey;
-ALTER TABLE IF EXISTS ONLY public.categories DROP CONSTRAINT IF EXISTS categories_name_key;
-ALTER TABLE IF EXISTS ONLY public.campaigns DROP CONSTRAINT IF EXISTS campaigns_slug_key;
-ALTER TABLE IF EXISTS ONLY public.campaigns DROP CONSTRAINT IF EXISTS campaigns_pkey;
-ALTER TABLE IF EXISTS ONLY public.benefits DROP CONSTRAINT IF EXISTS benefits_pkey;
-ALTER TABLE IF EXISTS ONLY public.audit_logs DROP CONSTRAINT IF EXISTS audit_logs_pkey;
-ALTER TABLE IF EXISTS public.tags ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.categories ALTER COLUMN id DROP DEFAULT;
-DROP TABLE IF EXISTS public.users;
-DROP TABLE IF EXISTS public.tier_benefits;
-DROP SEQUENCE IF EXISTS public.tags_id_seq;
-DROP TABLE IF EXISTS public.tags;
-DROP TABLE IF EXISTS public.post_tags;
-DROP TABLE IF EXISTS public.polls;
-DROP TABLE IF EXISTS public.poll_votes;
-DROP TABLE IF EXISTS public.poll_options;
-DROP TABLE IF EXISTS public.payouts;
-DROP VIEW IF EXISTS public.patron_feed_view;
-DROP TABLE IF EXISTS public.tiers;
-DROP TABLE IF EXISTS public.post_tier_access;
-DROP TABLE IF EXISTS public.notifications;
-DROP TABLE IF EXISTS public.messages;
-DROP TABLE IF EXISTS public.media_attachments;
-DROP TABLE IF EXISTS public.likes;
-DROP TABLE IF EXISTS public.goals;
-DROP TABLE IF EXISTS public.conversations;
-DROP TABLE IF EXISTS public.comments;
-DROP SEQUENCE IF EXISTS public.categories_id_seq;
-DROP TABLE IF EXISTS public.categories;
-DROP VIEW IF EXISTS public.campaign_analytics;
-DROP TABLE IF EXISTS public.subscriptions;
-DROP TABLE IF EXISTS public.posts;
-DROP TABLE IF EXISTS public.payments;
-DROP TABLE IF EXISTS public.campaigns;
-DROP TABLE IF EXISTS public.benefits;
-DROP TABLE IF EXISTS public.audit_logs;
-DROP FUNCTION IF EXISTS public.update_updated_at_column();
-DROP FUNCTION IF EXISTS public.update_tier_patron_count();
-DROP FUNCTION IF EXISTS public.update_poll_option_vote_count();
-DROP FUNCTION IF EXISTS public.log_security_audit();
-DROP TYPE IF EXISTS public.user_role;
-DROP TYPE IF EXISTS public.subscription_status;
-DROP TYPE IF EXISTS public.post_type;
-DROP TYPE IF EXISTS public.post_access_level;
-DROP TYPE IF EXISTS public.payout_status;
-DROP TYPE IF EXISTS public.payment_status;
-DROP TYPE IF EXISTS public.notification_type;
-DROP TYPE IF EXISTS public.billing_cycle;
-DROP EXTENSION IF EXISTS "uuid-ossp";
-DROP EXTENSION IF EXISTS pg_trgm;
 --
 -- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
 --
@@ -479,6 +319,7 @@ CREATE TABLE public.campaigns (
     published_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    theme jsonb DEFAULT '{"accentColor": {"b": 59, "g": 235, "r": 255}, "primaryColor": {"b": 34, "g": 87, "r": 255}}'::jsonb,
     CONSTRAINT campaigns_slug_check CHECK (((slug)::text ~* '^[a-z0-9-]+$'::text))
 );
 
@@ -1013,8 +854,8 @@ COPY public.benefits (id, campaign_id, title, description, created_at) FROM stdi
 -- Data for Name: campaigns; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.campaigns (id, creator_id, category_id, title, slug, summary, about, cover_image_url, creation_name, currency, is_nsfw, is_published, published_at, created_at, updated_at) FROM stdin;
-11111111-1111-1111-1111-111111111111	00000000-0000-0000-0000-000000000002	1	Tech Overload Podcast	tech-overload	Weekly deep dives into modern tech & AI	Welcome to Tech Overload!	\N	is creating podcasts	USD	f	t	2026-09-13 09:35:00.111147+00	2026-10-13 09:35:00.111147+00	2026-10-13 09:35:00.111147+00
+COPY public.campaigns (id, creator_id, category_id, title, slug, summary, about, cover_image_url, creation_name, currency, is_nsfw, is_published, published_at, created_at, updated_at, theme) FROM stdin;
+11111111-1111-1111-1111-111111111111	00000000-0000-0000-0000-000000000002	1	Tech Overload Podcast	tech-overload	Weekly deep dives into modern tech & AI	Welcome to Tech Overload!	\N	is creating podcasts	USD	f	t	2026-09-13 09:35:00.111147+00	2026-10-13 09:35:00.111147+00	2026-10-13 09:35:00.111147+00	{"accentColor": {"b": 59, "g": 235, "r": 255}, "primaryColor": {"b": 34, "g": 87, "r": 255}}
 \.
 
 
@@ -2151,4 +1992,4 @@ CREATE POLICY subscriptions_participant_policy ON public.subscriptions USING (((
 -- PostgreSQL database dump complete
 --
 
-\unrestrict fPIcG7VwwghYSoTm6D0E3zDq0dnfyTVWAd2Gi3YSjxnhvae1f3aBMDiNNwRbsjo
+\unrestrict nS7kwDufPyeqLQY8ouTI227uhbSaa19KZsG6YBbg7iR4D8VGzNeyUSrjORRjeWa
