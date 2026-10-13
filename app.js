@@ -401,11 +401,13 @@ function showCreatorOnboardingModal() {
       <div class="grid-2">
         <div>
           <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">PROFILE AVATAR URL</label>
-          <input type="url" id="creator-avatar-url" class="brutal-input" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80">
+          <input type="text" id="creator-avatar-url" class="brutal-input" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80">
+          <input type="file" id="creator-avatar-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
         </div>
         <div>
           <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">BANNER COVER URL</label>
-          <input type="url" id="creator-banner-url" class="brutal-input" value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80">
+          <input type="text" id="creator-banner-url" class="brutal-input" value="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80">
+          <input type="file" id="creator-banner-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
         </div>
       </div>
 
@@ -490,6 +492,28 @@ function showCreatorOnboardingModal() {
 
   ['pr', 'pg', 'pb', 'ar', 'ag', 'ab'].forEach((id) => {
     document.getElementById(`slider-${id}`).addEventListener('input', updateRGBPreviews);
+  });
+
+  document.getElementById('creator-avatar-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById('creator-avatar-url').value = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  document.getElementById('creator-banner-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById('creator-banner-url').value = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
   });
 
   document.getElementById('creator-onboarding-form').addEventListener('submit', (e) => {
@@ -794,12 +818,14 @@ function renderRGBThemeStudioControls(creator) {
         <div class="grid-2">
           <div>
             <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">PROFILE AVATAR IMAGE URL</label>
-            <input type="url" id="studio-avatar-url" class="brutal-input" value="${creator.avatarUrl}">
+            <input type="text" id="studio-avatar-url" class="brutal-input" value="${creator.avatarUrl}">
+            <input type="file" id="studio-avatar-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
           </div>
 
           <div>
             <label style="display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.2rem;">BANNER COVER IMAGE URL</label>
-            <input type="url" id="studio-banner-url" class="brutal-input" value="${creator.bannerUrl}">
+            <input type="text" id="studio-banner-url" class="brutal-input" value="${creator.bannerUrl}">
+            <input type="file" id="studio-banner-file" accept="image/*" class="brutal-input" style="margin-top: 0.4rem;">
           </div>
         </div>
       </div>
@@ -845,6 +871,34 @@ function attachRGBStudioListeners(creator) {
     const elem = document.getElementById(`studio-slider-${id}`);
     if (elem) elem.addEventListener('input', updateLiveVarsAndPreview);
   });
+
+  const avatarFileElem = document.getElementById('studio-avatar-file');
+  if (avatarFileElem) {
+    avatarFileElem.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          document.getElementById('studio-avatar-url').value = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  const bannerFileElem = document.getElementById('studio-banner-file');
+  if (bannerFileElem) {
+    bannerFileElem.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          document.getElementById('studio-banner-url').value = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
 
   const saveBtn = document.getElementById('btn-save-rgb-theme');
   if (saveBtn) {
