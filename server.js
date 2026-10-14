@@ -1,6 +1,7 @@
 const express = require('express');
 const { Pool } = require('pg');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,85 +26,12 @@ const query = (text, params) => pool.query(text, params);
 // -----------------------------------------------------------------------------
 
 // GET /api/creators - Fetch all active creator campaigns with tiers & analytics
-app.get('/api/creators', async (req, res) => {
+app.get('/api/creators', (req, res) => {
   try {
-    const campaignsRes = await query(`
-      SELECT
-        c.id AS campaign_id,
-        c.creator_id,
-        c.title AS campaign_title,
-        c.slug AS campaign_slug,
-        c.summary,
-        c.about,
-        c.cover_image_url,
-        c.theme,
-        u.username,
-        u.full_name,
-        u.avatar_url,
-        u.bio AS user_bio,
-        cat.name AS category_name,
-        COALESCE(ca.active_patrons_count, 0) AS active_patrons_count,
-        COALESCE(ca.monthly_recurring_revenue_cents, 0) AS monthly_recurring_revenue_cents
-      FROM campaigns c
-      JOIN users u ON c.creator_id = u.id
-      LEFT JOIN categories cat ON c.category_id = cat.id
-      LEFT JOIN campaign_analytics ca ON c.id = ca.campaign_id
-      ORDER BY c.created_at ASC
-    `);
-
-    const creators = await Promise.all(
-      campaignsRes.rows.map(async (c) => {
-        // Fetch tiers for campaign
-        const tiersRes = await query(
-          `SELECT id, title, description, amount_cents FROM tiers WHERE campaign_id = $1 AND is_active = TRUE ORDER BY amount_cents ASC`,
-          [c.campaign_id]
-        );
-
-        const tiers = await Promise.all(
-          tiersRes.rows.map(async (t) => {
-            const benefitsRes = await query(
-              `SELECT b.title FROM benefits b JOIN tier_benefits tb ON b.id = tb.benefit_id WHERE tb.tier_id = $1`,
-              [t.id]
-            );
-            return {
-              id: t.id,
-              name: t.title,
-              price: Math.round(t.amount_cents / 100),
-              description: t.description || '',
-              perks: benefitsRes.rows.map((b) => b.title),
-            };
-          })
-        );
-
-        const theme = c.theme || {
-          primaryColor: { r: 255, g: 87, b: 34 },
-          accentColor: { r: 255, g: 235, b: 59 },
-        };
-
-        return {
-          id: c.campaign_id,
-          creatorId: c.creator_id,
-          handle: c.username,
-          displayName: c.campaign_title || c.full_name,
-          bio: c.about || c.summary || c.user_bio || '',
-          avatarUrl:
-            c.avatar_url ||
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80',
-          bannerUrl:
-            c.cover_image_url ||
-            'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80',
-          category: c.category_name || 'Digital Art & Music',
-          theme,
-          subscribersCount: parseInt(c.active_patrons_count, 10),
-          monthlyRevenue: Math.round(parseInt(c.monthly_recurring_revenue_cents, 10) / 100),
-          tiers,
-        };
-      })
-    );
-
-    res.json(creators);
+    const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'data.json'), 'utf-8'));
+    res.json(data.creators || []);
   } catch (err) {
-    console.error('Error in GET /api/creators:', err);
+    console.error('Error in GET /api/creators (reading data.json):', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
@@ -141,59 +69,20 @@ app.put('/api/creators/:id/theme', async (req, res) => {
 });
 
 // GET /api/posts - Fetch posts across platform or by creatorId
-app.get('/api/posts', async (req, res) => {
+app.get('/api/posts', (req, res) => {
   const { creatorId } = req.query;
 
   try {
-    let sql = `
-      SELECT
-        p.id,
-        p.campaign_id,
-        p.author_id,
-        p.title,
-        p.content,
-        p.teaser_text,
-        p.access_level,
-        p.published_at,
-        p.created_at,
-        c.creator_id,
-        (SELECT file_url FROM media_attachments WHERE post_id = p.id LIMIT 1) AS image_url,
-        (SELECT COUNT(*) FROM likes WHERE post_id = p.id) AS likes_count
-      FROM posts p
-      JOIN campaigns c ON p.campaign_id = c.id
-    `;
-    const params = [];
+    const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'data.json'), 'utf-8'));
+    let posts = data.posts || [];
 
     if (creatorId) {
-      sql += ` WHERE p.campaign_id = $1`;
-      params.push(creatorId);
+      posts = posts.filter(p => p.creatorId === creatorId);
     }
-
-    sql += ` ORDER BY p.published_at DESC`;
-
-    const result = await query(sql, params);
-
-    const posts = result.rows.map((p) => {
-      const now = new Date();
-      const pubDate = new Date(p.published_at || p.created_at);
-      const diffHours = Math.max(1, Math.floor((now - pubDate) / (1000 * 60 * 60)));
-      const timeAgo = diffHours < 24 ? `${diffHours} hours ago` : `${Math.floor(diffHours / 24)} days ago`;
-
-      return {
-        id: p.id,
-        creatorId: p.campaign_id,
-        title: p.title,
-        content: p.content || p.teaser_text || '',
-        imageUrl: p.image_url || null,
-        createdAt: timeAgo,
-        isExclusive: p.access_level !== 'public',
-        likesCount: parseInt(p.likes_count, 10) || 0,
-      };
-    });
 
     res.json(posts);
   } catch (err) {
-    console.error('Error in GET /api/posts:', err);
+    console.error('Error in GET /api/posts (reading data.json):', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
