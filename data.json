@@ -1,0 +1,58 @@
+{
+  "creators": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "creatorId": "00000000-0000-0000-0000-000000000002",
+      "handle": "techoverload",
+      "displayName": "Tech Overload Podcast",
+      "bio": "Weekly deep dives into modern tech & AI",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+      "bannerUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80",
+      "category": "Podcasts",
+      "theme": {
+        "primaryColor": { "r": 255, "g": 87, "b": 34 },
+        "accentColor": { "r": 255, "g": 235, "b": 59 }
+      },
+      "subscribersCount": 2,
+      "monthlyRevenue": 20,
+      "tiers": [
+        {
+          "id": "33333333-3333-3333-3333-333333333331",
+          "name": "Listener Support",
+          "price": 5,
+          "description": "Access to patron-only posts and community discord",
+          "perks": ["Early Access Episodes"]
+        },
+        {
+          "id": "33333333-3333-3333-3333-333333333332",
+          "name": "VIP Insider",
+          "price": 15,
+          "description": "Early access to episodes, bonus episodes, and Q&A priority",
+          "perks": ["Early Access Episodes", "Exclusive Bonus Episodes"]
+        }
+      ]
+    }
+  ],
+  "posts": [
+    {
+      "id": "66666666-6666-6666-6666-666666666661",
+      "creatorId": "11111111-1111-1111-1111-111111111111",
+      "title": "Episode 42: The Future of Quantum Computing",
+      "content": "Here is full content for Episode 42 discussing quantum algorithms...",
+      "imageUrl": null,
+      "createdAt": "2 days ago",
+      "isExclusive": true,
+      "likesCount": 1
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666662",
+      "creatorId": "11111111-1111-1111-1111-111111111111",
+      "title": "Welcome to Tech Overload!",
+      "content": "Public welcome announcement to all fans and followers!",
+      "imageUrl": null,
+      "createdAt": "15 days ago",
+      "isExclusive": false,
+      "likesCount": 0
+    }
+  ]
+}
